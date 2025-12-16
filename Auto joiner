@@ -1,44 +1,45 @@
+--// Krypth AJ – FULL FIXED GUI SCRIPT (NO ERRORS)
+
 repeat task.wait() until game:IsLoaded()
 
 -- SERVICES
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
 local TeleportService = game:GetService("TeleportService")
-local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
 
 local LocalPlayer = Players.LocalPlayer
 
 -- CONFIG
 local RELAY_URL = "https://visible-self-furnishings-relatives.trycloudflare.com/servers"
-local REFRESH_RATE = 8
+local REFRESH_INTERVAL = 5
+local SESSION_START = os.time() * 1000
+local FONT = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
 
--- CLEANUP
+-- CLEAN OLD GUI
 pcall(function()
-    CoreGui:FindFirstChild("KrypthAJ"):Destroy()
+    local old = CoreGui:FindFirstChild("KrypthAJ")
+    if old then old:Destroy() end
 end)
 
--- FONT
-local FONT = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Medium)
-
 -- GUI ROOT
-local Gui = Instance.new("ScreenGui")
-Gui.Name = "KrypthAJ"
-Gui.ResetOnSpawn = false
-Gui.IgnoreGuiInset = true
-Gui.Parent = CoreGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "KrypthAJ"
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = CoreGui
 
 -- MAIN FRAME
 local Main = Instance.new("Frame")
-Main.Size = UDim2.fromScale(0.42, 0.45)
+Main.Size = UDim2.fromScale(0.45, 0.55)
 Main.Position = UDim2.fromScale(0.5, 0.5)
 Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.BackgroundColor3 = Color3.fromRGB(15, 17, 22)
+Main.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 Main.BorderSizePixel = 0
-Main.Parent = Gui
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 18)
+Main.Parent = ScreenGui
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 22)
 
 -- DRAG
 do
@@ -58,99 +59,95 @@ do
     UserInputService.InputChanged:Connect(function(i)
         if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = i.Position - dragStart
-            Main.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
+            Main.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
         end
     end)
 end
 
 -- HEADER
 local Header = Instance.new("TextLabel")
-Header.Size = UDim2.new(1, -30, 0, 48)
-Header.Position = UDim2.fromOffset(15, 10)
-Header.Text = "Krypth Auto Joiner"
-Header.FontFace = FONT
-Header.TextSize = 22
-Header.TextXAlignment = Left
-Header.TextColor3 = Color3.fromRGB(235,235,240)
+Header.Size = UDim2.new(1, -30, 0, 60)
+Header.Position = UDim2.new(0, 15, 0, 0)
 Header.BackgroundTransparency = 1
+Header.Text = "Krypth AJ"
+Header.FontFace = FONT
+Header.TextSize = 26
+Header.TextColor3 = Color3.fromRGB(235,235,245)
+Header.TextXAlignment = Enum.TextXAlignment.Left
+Header.TextYAlignment = Enum.TextYAlignment.Center
 Header.Parent = Main
 
 -- SCROLL
 local Scroll = Instance.new("ScrollingFrame")
-Scroll.Position = UDim2.fromOffset(15, 65)
-Scroll.Size = UDim2.new(1, -30, 1, -80)
+Scroll.Position = UDim2.new(0, 15, 0, 70)
+Scroll.Size = UDim2.new(1, -30, 1, -85)
 Scroll.CanvasSize = UDim2.new()
-Scroll.ScrollBarThickness = 4
+Scroll.ScrollBarImageTransparency = 0.2
+Scroll.ScrollBarThickness = 5
 Scroll.BackgroundTransparency = 1
+Scroll.BorderSizePixel = 0
 Scroll.Parent = Main
 
 local Layout = Instance.new("UIListLayout")
-Layout.Padding = UDim.new(0, 10)
+Layout.Padding = UDim.new(0, 12)
 Layout.Parent = Scroll
 
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    Scroll.CanvasSize = UDim2.fromOffset(0, Layout.AbsoluteContentSize.Y + 20)
+    Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
 end)
 
--- RAIN
-local RainFolder = Instance.new("Folder", Gui)
-RunService.RenderStepped:Connect(function()
-    if math.random() < 0.3 then
-        local drop = Instance.new("Frame")
-        drop.Size = UDim2.fromOffset(1, math.random(10,20))
-        drop.Position = UDim2.fromScale(math.random(), -0.1)
-        drop.BackgroundColor3 = Color3.fromRGB(120,120,140)
-        drop.BackgroundTransparency = 0.7
-        drop.Parent = RainFolder
-
-        TweenService:Create(drop, TweenInfo.new(1.2), {
-            Position = UDim2.fromScale(drop.Position.X.Scale, 1.2),
-            BackgroundTransparency = 1
-        }):Play()
-
-        task.delay(1.2, function() drop:Destroy() end)
+-- HELPERS
+local function clearRows()
+    for _,v in ipairs(Scroll:GetChildren()) do
+        if v:IsA("Frame") then v:Destroy() end
     end
-end)
+end
 
--- ROW CREATOR
-local function createRow(brainrot, money, jobId, placeId)
+local function createRow(name, money, placeId, jobId)
     local Row = Instance.new("Frame")
     Row.Size = UDim2.new(1, 0, 0, 64)
-    Row.BackgroundColor3 = Color3.fromRGB(22, 25, 32)
+    Row.BackgroundColor3 = Color3.fromRGB(26,26,34)
     Row.BorderSizePixel = 0
     Row.Parent = Scroll
-    Instance.new("UICorner", Row).CornerRadius = UDim.new(0, 14)
+    Instance.new("UICorner", Row).CornerRadius = UDim.new(0, 16)
 
     local Name = Instance.new("TextLabel")
-    Name.Position = UDim2.fromOffset(16, 8)
-    Name.Size = UDim2.new(0.6, 0, 0, 22)
-    Name.Text = brainrot
+    Name.Position = UDim2.new(0, 18, 0, 6)
+    Name.Size = UDim2.new(0.6, 0, 0, 24)
+    Name.BackgroundTransparency = 1
+    Name.Text = name
     Name.FontFace = FONT
     Name.TextSize = 16
-    Name.TextXAlignment = Left
-    Name.TextColor3 = Color3.fromRGB(230,230,235)
-    Name.BackgroundTransparency = 1
+    Name.TextColor3 = Color3.fromRGB(235,235,245)
+    Name.TextXAlignment = Enum.TextXAlignment.Left
+    Name.TextYAlignment = Enum.TextYAlignment.Center
     Name.Parent = Row
 
     local Money = Instance.new("TextLabel")
-    Money.Position = UDim2.fromOffset(16, 32)
-    Money.Size = UDim2.new(0.6, 0, 0, 18)
+    Money.Position = UDim2.new(0, 18, 0, 34)
+    Money.Size = UDim2.new(0.6, 0, 0, 20)
+    Money.BackgroundTransparency = 1
     Money.Text = money
     Money.FontFace = FONT
     Money.TextSize = 14
-    Money.TextXAlignment = Left
-    Money.TextColor3 = Color3.fromRGB(150,200,255)
-    Money.BackgroundTransparency = 1
+    Money.TextColor3 = Color3.fromRGB(160,220,180)
+    Money.TextXAlignment = Enum.TextXAlignment.Left
+    Money.TextYAlignment = Enum.TextYAlignment.Center
     Money.Parent = Row
 
     local Join = Instance.new("TextButton")
-    Join.Size = UDim2.fromOffset(110, 36)
-    Join.Position = UDim2.new(1, -126, 0.5, -18)
+    Join.Size = UDim2.new(0, 120, 0, 38)
+    Join.Position = UDim2.new(1, -138, 0.5, -19)
+    Join.BackgroundColor3 = Color3.fromRGB(60,200,130)
     Join.Text = "JOIN"
     Join.FontFace = FONT
-    Join.TextSize = 14
-    Join.TextColor3 = Color3.fromRGB(20,20,25)
-    Join.BackgroundColor3 = Color3.fromRGB(90,200,140)
+    Join.TextSize = 15
+    Join.TextColor3 = Color3.fromRGB(15,15,20)
     Join.BorderSizePixel = 0
     Join.Parent = Row
     Instance.new("UICorner", Join).CornerRadius = UDim.new(0, 12)
@@ -160,26 +157,25 @@ local function createRow(brainrot, money, jobId, placeId)
     end)
 end
 
--- REFRESH
-local function refresh()
-    for _,v in ipairs(Scroll:GetChildren()) do
-        if v:IsA("Frame") then v:Destroy() end
-    end
-
-    local raw = game:HttpGet(RELAY_URL)
-    local data = HttpService:JSONDecode(raw)
-
-    for _,entry in ipairs(data) do
-        if entry.brainrot and entry.money then
-            createRow(entry.brainrot, entry.money, entry.jobId, entry.placeId)
-        end
-    end
-end
-
--- LOOP
+-- FETCH + REFRESH
 task.spawn(function()
     while true do
-        pcall(refresh)
-        task.wait(REFRESH_RATE)
+        clearRows()
+        local ok, res = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet(RELAY_URL))
+        end)
+        if ok and type(res) == "table" then
+            for _,v in ipairs(res) do
+                if v.time and v.time >= SESSION_START then
+                    createRow(
+                        tostring(v.brainrot or "Unknown"),
+                        tostring(v.money or "$0/s"),
+                        tonumber(v.placeId),
+                        tostring(v.jobId)
+                    )
+                end
+            end
+        end
+        task.wait(REFRESH_INTERVAL)
     end
 end)
