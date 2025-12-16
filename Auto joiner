@@ -1,68 +1,73 @@
---====================================
--- Krypth AutoJoiner GUI (FINAL FIX)
---====================================
-
 repeat task.wait() until game:IsLoaded()
 
--- ===== CLEAN GUI =====
-local CoreGui = game:GetService("CoreGui")
-for _,v in ipairs(CoreGui:GetChildren()) do
-    if v.Name == "Krypth AutoJoiner" then
-        v:Destroy()
-    end
-end
-
--- ===== CONFIG =====
-local RELAY_URL = "https://selections-impression-renaissance-paul.trycloudflare.com/servers"
-
--- ===== SERVICES =====
+-- SERVICES
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
 
 local LocalPlayer = Players.LocalPlayer
 
--- ===== HELPERS =====
-local function formatMoney(n)
-    n = math.floor(n)
-    local s = tostring(n):reverse():gsub("(%d%d%d)", "%1,"):reverse()
-    if s:sub(1,1) == "," then s = s:sub(2) end
-    return "$"..s.."/s"
-end
+-- RELAY
+local RELAY_URL = "https://selections-impression-renaissance-paul.trycloudflare.com/servers"
 
-local function tween(o,p,t)
+-- ANTI-DUPE CACHE
+local SeenJobs = {}
+
+-- CLEAN OLD GUI
+pcall(function()
+    local old = CoreGui:FindFirstChild("Krypth AutoJoiner")
+    if old then old:Destroy() end
+end)
+
+-- UI HELPERS
+local function doTween(obj, props, t)
     TweenService:Create(
-        o,
+        obj,
         TweenInfo.new(t or 0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-        p
+        props
     ):Play()
 end
 
--- ===== GUI ROOT =====
-local ScreenGui = Instance.new("ScreenGui", CoreGui)
+-- FORMAT MONEY
+local function formatMoney(n)
+    n = tonumber(n) or 0
+    local s = tostring(math.floor(n))
+    local r = s:reverse():gsub("(%d%d%d)", "%1,"):reverse()
+    if r:sub(1,1) == "," then r = r:sub(2) end
+    return "$" .. r .. "/s"
+end
+
+-- UI ROOT
+local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Krypth AutoJoiner"
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = CoreGui
 
-local Shadow = Instance.new("ImageLabel", ScreenGui)
-Shadow.AnchorPoint = Vector2.new(0.5,0.5)
-Shadow.Position = UDim2.fromScale(0.5,0.5)
-Shadow.Size = UDim2.fromScale(0.5,0.65)
+local Shadow = Instance.new("ImageLabel")
+Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+Shadow.Position = UDim2.fromScale(0.5, 0.5)
+Shadow.Size = UDim2.fromScale(0.5, 0.65)
 Shadow.Image = "rbxassetid://1316045217"
 Shadow.ImageTransparency = 0.45
+Shadow.ScaleType = Enum.ScaleType.Slice
+Shadow.SliceCenter = Rect.new(10,10,118,118)
 Shadow.BackgroundTransparency = 1
+Shadow.Parent = ScreenGui
 
-local Main = Instance.new("Frame", ScreenGui)
-Main.AnchorPoint = Vector2.new(0.5,0.5)
-Main.Position = UDim2.fromScale(0.5,0.5)
-Main.Size = UDim2.fromScale(0.46,0.6)
+local Main = Instance.new("Frame")
+Main.AnchorPoint = Vector2.new(0.5, 0.5)
+Main.Position = UDim2.fromScale(0.5, 0.5)
+Main.Size = UDim2.fromScale(0.46, 0.6)
 Main.BackgroundColor3 = Color3.fromRGB(17,17,22)
 Main.BorderSizePixel = 0
 Main.ClipsDescendants = true
+Main.Parent = ScreenGui
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0,20)
 
--- ===== HEADER =====
+-- HEADER
 local Header = Instance.new("Frame", Main)
 Header.Size = UDim2.new(1,0,0,72)
 Header.BackgroundTransparency = 1
@@ -74,9 +79,8 @@ Title.Text = "🧠 Krypth AutoJoiner"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 22
 Title.TextColor3 = Color3.fromRGB(235,235,245)
-Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.TextYAlignment = Enum.TextYAlignment.Center
+Title.BackgroundTransparency = 1
 
 local MinBtn = Instance.new("TextButton", Header)
 MinBtn.Size = UDim2.new(0,38,0,38)
@@ -89,68 +93,47 @@ MinBtn.BackgroundColor3 = Color3.fromRGB(30,30,38)
 MinBtn.BorderSizePixel = 0
 Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0,12)
 
--- ===== SCROLL =====
+-- SCROLL
 local Scroll = Instance.new("ScrollingFrame", Main)
 Scroll.Position = UDim2.new(0,18,0,90)
 Scroll.Size = UDim2.new(1,-36,1,-110)
-Scroll.CanvasSize = UDim2.new(0,0,0,0)
+Scroll.CanvasSize = UDim2.new()
 Scroll.ScrollBarThickness = 6
 Scroll.BackgroundTransparency = 1
 
 local Layout = Instance.new("UIListLayout", Scroll)
-Layout.Padding = UDim.new(0,12)
+Layout.Padding = UDim.new(0,14)
 
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 20)
 end)
 
--- ===== ROW =====
-local function createRow(entry)
-    local brainrot =
-        entry.bestBrainrot
-        or entry.brainrot
-        or "Unknown Brainrot"
-
-    local money =
-        entry.money
-        or (entry.mps and formatMoney(entry.mps))
-        or "$0/s"
-
-    local players = ""
-    if entry.players and entry.maxPlayers then
-        players = entry.players.."/"..entry.maxPlayers
-    end
+-- ROW CREATOR
+local function createRow(data)
+    if SeenJobs[data.jobId] then return end
+    SeenJobs[data.jobId] = true
 
     local Row = Instance.new("Frame", Scroll)
-    Row.Size = UDim2.new(1,0,0,78)
+    Row.Size = UDim2.new(1,0,0,70)
     Row.BackgroundColor3 = Color3.fromRGB(23,23,30)
     Row.BorderSizePixel = 0
     Instance.new("UICorner", Row).CornerRadius = UDim.new(0,16)
 
-    -- NAME
-    local Name = Instance.new("TextLabel", Row)
-    Name.Position = UDim2.new(0,20,0,10)
-    Name.Size = UDim2.new(0.65,-20,0,26)
-    Name.Text = brainrot
-    Name.Font = Enum.Font.GothamBold
-    Name.TextSize = 15
-    Name.TextColor3 = Color3.fromRGB(235,235,245)
-    Name.BackgroundTransparency = 1
-    Name.TextXAlignment = Enum.TextXAlignment.Left
-    Name.TextWrapped = true
+    local Text = Instance.new("TextLabel", Row)
+    Text.Position = UDim2.new(0,18,0,8)
+    Text.Size = UDim2.new(0.6,0,1,-16)
+    Text.TextWrapped = true
+    Text.TextXAlignment = Enum.TextXAlignment.Left
+    Text.TextYAlignment = Enum.TextYAlignment.Center
+    Text.Font = Enum.Font.Gotham
+    Text.TextSize = 14
+    Text.TextColor3 = Color3.fromRGB(220,220,230)
+    Text.BackgroundTransparency = 1
+    Text.Text =
+        tostring(data.brainrot or data.bestBrainrot or "Unknown")
+        .. "\n"
+        .. formatMoney(data.mps or tonumber((data.money or ""):gsub("[^%d]", "")))
 
-    -- MONEY
-    local Money = Instance.new("TextLabel", Row)
-    Money.Position = UDim2.new(0,20,0,38)
-    Money.Size = UDim2.new(0.65,-20,0,20)
-    Money.Text = money .. (players ~= "" and ("  ("..players..")") or "")
-    Money.Font = Enum.Font.Gotham
-    Money.TextSize = 13
-    Money.TextColor3 = Color3.fromRGB(180,180,190)
-    Money.BackgroundTransparency = 1
-    Money.TextXAlignment = Enum.TextXAlignment.Left
-
-    -- JOIN
     local Join = Instance.new("TextButton", Row)
     Join.Size = UDim2.new(0,120,0,40)
     Join.Position = UDim2.new(1,-140,0.5,-20)
@@ -164,49 +147,41 @@ local function createRow(entry)
 
     Join.MouseButton1Click:Connect(function()
         TeleportService:TeleportToPlaceInstance(
-            entry.placeId,
-            entry.jobId,
+            data.placeId,
+            data.jobId,
             LocalPlayer
         )
     end)
 end
 
--- ===== FETCH LOOP =====
+-- FETCH LOOP
 task.spawn(function()
     while true do
         task.wait(3)
 
-        for _,c in ipairs(Scroll:GetChildren()) do
-            if c:IsA("Frame") then
-                c:Destroy()
-            end
-        end
-
-        local ok, data = pcall(function()
+        local ok, res = pcall(function()
             return HttpService:JSONDecode(game:HttpGet(RELAY_URL))
         end)
 
-        if ok and type(data) == "table" then
-            for _,entry in ipairs(data) do
-                if entry.jobId and entry.placeId then
-                    createRow(entry)
-                end
+        if ok and type(res) == "table" then
+            for _, server in ipairs(res) do
+                createRow(server)
             end
         end
     end
 end)
 
--- ===== MINIMIZE =====
+-- MINIMIZE
 local minimized = false
 local fullSize = Main.Size
 
 MinBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     if minimized then
-        tween(Main,{Size=UDim2.new(fullSize.X.Scale,0,0,72)},0.35)
+        doTween(Main, {Size = UDim2.new(fullSize.X.Scale,0,0,72)}, 0.3)
         Scroll.Visible = false
     else
-        tween(Main,{Size=fullSize},0.4)
+        doTween(Main, {Size = fullSize}, 0.4)
         Scroll.Visible = true
     end
 end)
