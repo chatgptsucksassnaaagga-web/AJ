@@ -21,93 +21,118 @@ pcall(function()
     if old then old:Destroy() end
 end)
 
--- ===== GUI BUILD =====
+-- ===== TWEEN =====
 local function tween(o,p,t)
-    TweenService:Create(o,TweenInfo.new(t or 0.35,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),p):Play()
+    TweenService:Create(
+        o,
+        TweenInfo.new(t or 0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+        p
+    ):Play()
 end
 
-local ScreenGui = Instance.new("ScreenGui", CoreGui)
+-- ===== GUI =====
+local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Krypth AutoJoiner"
+ScreenGui.IgnoreGuiInset = true
 ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = CoreGui
 
-local Shadow = Instance.new("ImageLabel", ScreenGui)
+local Shadow = Instance.new("ImageLabel")
 Shadow.AnchorPoint = Vector2.new(0.5,0.5)
 Shadow.Position = UDim2.fromScale(0.5,0.5)
 Shadow.Size = UDim2.fromScale(0.5,0.65)
 Shadow.Image = "rbxassetid://1316045217"
 Shadow.ImageTransparency = 0.45
 Shadow.BackgroundTransparency = 1
+Shadow.Parent = ScreenGui
 
-local Main = Instance.new("Frame", ScreenGui)
+local Main = Instance.new("Frame")
 Main.AnchorPoint = Vector2.new(0.5,0.5)
 Main.Position = UDim2.fromScale(0.5,0.5)
 Main.Size = UDim2.fromScale(0.46,0.6)
 Main.BackgroundColor3 = Color3.fromRGB(17,17,22)
 Main.BorderSizePixel = 0
-Instance.new("UICorner",Main).CornerRadius = UDim.new(0,20)
+Main.ClipsDescendants = true
+Main.Parent = ScreenGui
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,20)
 
-local Header = Instance.new("Frame", Main)
+-- ===== HEADER =====
+local Header = Instance.new("Frame")
 Header.Size = UDim2.new(1,0,0,72)
 Header.BackgroundTransparency = 1
+Header.Parent = Main
 
-local Title = Instance.new("TextLabel", Header)
+local Title = Instance.new("TextLabel")
 Title.Position = UDim2.new(0,22,0,0)
 Title.Size = UDim2.new(1,-120,1,0)
 Title.Text = "🧠 Krypth AutoJoiner"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 23
 Title.TextColor3 = Color3.fromRGB(235,235,245)
+Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.BackgroundTransparency = 1
-Title.TextXAlignment = Left
+Title.Parent = Header
 
-local MinBtn = Instance.new("TextButton", Header)
+local MinBtn = Instance.new("TextButton")
 MinBtn.Size = UDim2.new(0,38,0,38)
 MinBtn.Position = UDim2.new(1,-54,0.5,-19)
 MinBtn.Text = "—"
 MinBtn.Font = Enum.Font.GothamBold
 MinBtn.TextSize = 22
-MinBtn.BackgroundColor3 = Color3.fromRGB(30,30,38)
 MinBtn.TextColor3 = Color3.fromRGB(235,235,245)
-Instance.new("UICorner",MinBtn).CornerRadius = UDim.new(0,12)
+MinBtn.BackgroundColor3 = Color3.fromRGB(30,30,38)
+MinBtn.BorderSizePixel = 0
+MinBtn.Parent = Header
+Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0,12)
 
-local Scroll = Instance.new("ScrollingFrame", Main)
+-- ===== SCROLL =====
+local Scroll = Instance.new("ScrollingFrame")
 Scroll.Position = UDim2.new(0,18,0,90)
 Scroll.Size = UDim2.new(1,-36,1,-110)
+Scroll.CanvasSize = UDim2.new(0,0,0,0)
 Scroll.ScrollBarThickness = 6
 Scroll.BackgroundTransparency = 1
-Scroll.CanvasSize = UDim2.new()
+Scroll.Parent = Main
 
-local Layout = Instance.new("UIListLayout", Scroll)
+local Layout = Instance.new("UIListLayout")
 Layout.Padding = UDim.new(0,14)
+Layout.Parent = Scroll
+
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 20)
 end)
 
 -- ===== ROW =====
 local function createRow(data)
-    local Row = Instance.new("Frame", Scroll)
+    local Row = Instance.new("Frame")
     Row.Size = UDim2.new(1,0,0,70)
     Row.BackgroundColor3 = Color3.fromRGB(23,23,30)
-    Instance.new("UICorner",Row).CornerRadius = UDim.new(0,16)
+    Row.BorderSizePixel = 0
+    Row.Parent = Scroll
+    Instance.new("UICorner", Row).CornerRadius = UDim.new(0,16)
 
-    local Text = Instance.new("TextLabel", Row)
+    local Text = Instance.new("TextLabel")
     Text.Position = UDim2.new(0,22,0,0)
     Text.Size = UDim2.new(0.65,-22,1,0)
     Text.Text = data.brainrot.."  "..data.money
     Text.Font = Enum.Font.GothamBold
     Text.TextSize = 16
     Text.TextColor3 = Color3.fromRGB(220,220,230)
+    Text.TextXAlignment = Enum.TextXAlignment.Left
     Text.BackgroundTransparency = 1
-    Text.TextXAlignment = Left
+    Text.Parent = Row
 
-    local Join = Instance.new("TextButton", Row)
+    local Join = Instance.new("TextButton")
     Join.Size = UDim2.new(0,130,0,42)
     Join.Position = UDim2.new(1,-150,0.5,-21)
     Join.Text = "JOIN"
     Join.Font = Enum.Font.GothamBold
     Join.TextSize = 15
+    Join.TextColor3 = Color3.fromRGB(18,18,22)
     Join.BackgroundColor3 = Color3.fromRGB(45,200,125)
-    Instance.new("UICorner",Join).CornerRadius = UDim.new(0,12)
+    Join.BorderSizePixel = 0
+    Join.Parent = Row
+    Instance.new("UICorner", Join).CornerRadius = UDim.new(0,12)
 
     Join.MouseButton1Click:Connect(function()
         TeleportService:TeleportToPlaceInstance(
@@ -118,12 +143,12 @@ local function createRow(data)
     end)
 end
 
--- ===== FETCH LOOP (NO UI BUGS) =====
+-- ===== FETCH LOOP =====
 task.spawn(function()
     while true do
         task.wait(3)
 
-        for _, c in ipairs(Scroll:GetChildren()) do
+        for _,c in ipairs(Scroll:GetChildren()) do
             if c:IsA("Frame") then c:Destroy() end
         end
 
