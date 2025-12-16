@@ -1,748 +1,187 @@
---[=[
- d888b  db    db d888888b      .d888b.      db      db    db  .d8b.  
-88' Y8b 88    88   `88'        VP  `8D      88      88    88 d8' `8b 
-88      88    88    88            odD'      88      88    88 88ooo88 
-88  ooo 88    88    88          .88'        88      88    88 88~~~88 
-88. ~8~ 88b  d88   .88.        j88.         88booo. 88b  d88 88   88    @uniquadev
- Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER 
-]=]
-
--- Instances: 45 | Scripts: 3 | Modules: 0 | Tags: 0
-local G2L = {};
-
--- StarterGui.Krypth AJ / AUTO JOINER
-G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
-G2L["1"]["Name"] = [[Krypth AJ / AUTO JOINER]];
-G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME
-G2L["2"] = Instance.new("Frame", G2L["1"]);
-G2L["2"]["ZIndex"] = 2;
-G2L["2"]["BorderSizePixel"] = 0;
-G2L["2"]["BackgroundColor3"] = Color3.fromRGB(22, 8, 25);
-G2L["2"]["Size"] = UDim2.new(0, 129, 0, 176);
-G2L["2"]["Position"] = UDim2.new(0.03067, 0, 0.08669, 0);
-G2L["2"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["2"]["Name"] = [[KRYPTH MAIN FRAME]];
-G2L["2"]["BackgroundTransparency"] = 0.1;
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.KRYPTH AJ TITLE
-G2L["3"] = Instance.new("TextLabel", G2L["2"]);
-G2L["3"]["ZIndex"] = 2;
-G2L["3"]["BorderSizePixel"] = 0;
-G2L["3"]["TextSize"] = 22;
-G2L["3"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["3"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["3"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["3"]["BackgroundTransparency"] = 1;
-G2L["3"]["Size"] = UDim2.new(0, 74, 0, 26);
-G2L["3"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["3"]["Text"] = [[Krypth AJ]];
-G2L["3"]["Name"] = [[KRYPTH AJ TITLE]];
-G2L["3"]["Position"] = UDim2.new(0.20155, 0, 0, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON
-G2L["4"] = Instance.new("TextButton", G2L["2"]);
-G2L["4"]["BorderSizePixel"] = 0;
-G2L["4"]["TextSize"] = 14;
-G2L["4"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4"]["BackgroundColor3"] = Color3.fromRGB(39, 14, 45);
-G2L["4"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["4"]["ZIndex"] = 2;
-G2L["4"]["BackgroundTransparency"] = 0.3;
-G2L["4"]["Size"] = UDim2.new(0, 115, 0, 25);
-G2L["4"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4"]["Text"] = [[]];
-G2L["4"]["Name"] = [[1M - 10M BUTTON]];
-G2L["4"]["Position"] = UDim2.new(0.05426, 0, 0.1953, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON.1M - 10M TEXTLABLE
-G2L["5"] = Instance.new("TextLabel", G2L["4"]);
-G2L["5"]["BorderSizePixel"] = 0;
-G2L["5"]["TextSize"] = 18;
-G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["5"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["5"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["5"]["BackgroundTransparency"] = 1;
-G2L["5"]["Size"] = UDim2.new(0, 44, 0, -16);
-G2L["5"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["5"]["Text"] = [[1M - 10M]];
-G2L["5"]["Name"] = [[1M - 10M TEXTLABLE]];
-G2L["5"]["Position"] = UDim2.new(0.09565, 0, 0.8, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON.1M - 10M FRAME
-G2L["6"] = Instance.new("Frame", G2L["4"]);
-G2L["6"]["Visible"] = false;
-G2L["6"]["BorderSizePixel"] = 0;
-G2L["6"]["BackgroundColor3"] = Color3.fromRGB(22, 8, 25);
-G2L["6"]["Size"] = UDim2.new(0, 148, 0, 311);
-G2L["6"]["Position"] = UDim2.new(1.13043, 0, -1.4, 0);
-G2L["6"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["6"]["Name"] = [[1M - 10M FRAME]];
-G2L["6"]["BackgroundTransparency"] = 0.2;
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON.1M - 10M FRAME.LOG FRAME 1M - 10M
-G2L["7"] = Instance.new("Frame", G2L["6"]);
-G2L["7"]["BorderSizePixel"] = 0;
-G2L["7"]["BackgroundColor3"] = Color3.fromRGB(60, 21, 69);
-G2L["7"]["Size"] = UDim2.new(0, 136, 0, 34);
-G2L["7"]["Position"] = UDim2.new(0.04054, 0, 0.02251, 0);
-G2L["7"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["7"]["Name"] = [[LOG FRAME 1M - 10M]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON.1M - 10M FRAME.LOG FRAME 1M - 10M.BRAINROTS NAME
-G2L["8"] = Instance.new("TextLabel", G2L["7"]);
-G2L["8"]["BorderSizePixel"] = 0;
-G2L["8"]["TextSize"] = 19;
-G2L["8"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["8"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["8"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["8"]["BackgroundTransparency"] = 1;
-G2L["8"]["Size"] = UDim2.new(0, 73, 0, 16);
-G2L["8"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["8"]["Text"] = [[Brainrot]];
-G2L["8"]["Name"] = [[BRAINROTS NAME]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON.1M - 10M FRAME.LOG FRAME 1M - 10M.MONEY PER SECOND MPS
-G2L["9"] = Instance.new("TextLabel", G2L["7"]);
-G2L["9"]["BorderSizePixel"] = 0;
-G2L["9"]["TextSize"] = 19;
-G2L["9"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["9"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["9"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["9"]["BackgroundTransparency"] = 1;
-G2L["9"]["Size"] = UDim2.new(0, 67, 0, 13);
-G2L["9"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["9"]["Text"] = [[MPS]];
-G2L["9"]["Name"] = [[MONEY PER SECOND MPS]];
-G2L["9"]["Position"] = UDim2.new(0, 0, 0.48718, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON.1M - 10M FRAME.LOG FRAME 1M - 10M.JOIN SERVER
-G2L["a"] = Instance.new("TextButton", G2L["7"]);
-G2L["a"]["BorderSizePixel"] = 0;
-G2L["a"]["TextSize"] = 22;
-G2L["a"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["a"]["BackgroundColor3"] = Color3.fromRGB(116, 39, 133);
-G2L["a"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["a"]["Size"] = UDim2.new(0, 56, 0, 28);
-G2L["a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["a"]["Text"] = [[JOIN]];
-G2L["a"]["Name"] = [[JOIN SERVER]];
-G2L["a"]["Position"] = UDim2.new(0.53676, 0, 0.07692, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON.1M - 10M FRAME..
-G2L["b"] = Instance.new("UICorner", G2L["6"]);
-G2L["b"]["Name"] = [[.]];
-G2L["b"]["CornerRadius"] = UDim.new(0, 4);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON.1M - 10M FRAME..
-G2L["c"] = Instance.new("UIStroke", G2L["6"]);
-G2L["c"]["Transparency"] = 0.7;
-G2L["c"]["Thickness"] = 1.5;
-G2L["c"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-G2L["c"]["Name"] = [[.]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON..
-G2L["d"] = Instance.new("UICorner", G2L["4"]);
-G2L["d"]["Name"] = [[.]];
-G2L["d"]["CornerRadius"] = UDim.new(0, 4);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.1M - 10M BUTTON..
-G2L["e"] = Instance.new("UIStroke", G2L["4"]);
-G2L["e"]["Transparency"] = 0.7;
-G2L["e"]["Thickness"] = 1.5;
-G2L["e"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-G2L["e"]["Name"] = [[.]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON
-G2L["f"] = Instance.new("TextButton", G2L["2"]);
-G2L["f"]["BorderSizePixel"] = 0;
-G2L["f"]["TextSize"] = 14;
-G2L["f"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["f"]["BackgroundColor3"] = Color3.fromRGB(39, 14, 45);
-G2L["f"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["f"]["ZIndex"] = 2;
-G2L["f"]["BackgroundTransparency"] = 0.3;
-G2L["f"]["Size"] = UDim2.new(0, 115, 0, 25);
-G2L["f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["f"]["Text"] = [[]];
-G2L["f"]["Name"] = [[100M - INF BUTTON]];
-G2L["f"]["Position"] = UDim2.new(0.05426, 0, 0.5598, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON.100M - INF TEXTLABLE
-G2L["10"] = Instance.new("TextLabel", G2L["f"]);
-G2L["10"]["BorderSizePixel"] = 0;
-G2L["10"]["TextSize"] = 18;
-G2L["10"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["10"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["10"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["10"]["BackgroundTransparency"] = 1;
-G2L["10"]["Size"] = UDim2.new(0, 51, 0, -16);
-G2L["10"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["10"]["Text"] = [[100M - INF]];
-G2L["10"]["Name"] = [[100M - INF TEXTLABLE]];
-G2L["10"]["Position"] = UDim2.new(0.09565, 0, 0.8, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON.100M - INF FRAME
-G2L["11"] = Instance.new("Frame", G2L["f"]);
-G2L["11"]["Visible"] = false;
-G2L["11"]["BorderSizePixel"] = 0;
-G2L["11"]["BackgroundColor3"] = Color3.fromRGB(22, 8, 25);
-G2L["11"]["Size"] = UDim2.new(0, 148, 0, 311);
-G2L["11"]["Position"] = UDim2.new(1.13043, 0, -4, 0);
-G2L["11"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["11"]["Name"] = [[100M - INF FRAME]];
-G2L["11"]["BackgroundTransparency"] = 0.2;
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON.100M - INF FRAME.LOG FRAME 100M - INF
-G2L["12"] = Instance.new("Frame", G2L["11"]);
-G2L["12"]["BorderSizePixel"] = 0;
-G2L["12"]["BackgroundColor3"] = Color3.fromRGB(60, 21, 69);
-G2L["12"]["Size"] = UDim2.new(0, 136, 0, 34);
-G2L["12"]["Position"] = UDim2.new(0.04054, 0, 0.02251, 0);
-G2L["12"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["12"]["Name"] = [[LOG FRAME 100M - INF]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON.100M - INF FRAME.LOG FRAME 100M - INF.BRAINROTS NAME
-G2L["13"] = Instance.new("TextLabel", G2L["12"]);
-G2L["13"]["BorderSizePixel"] = 0;
-G2L["13"]["TextSize"] = 19;
-G2L["13"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["13"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["13"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["13"]["BackgroundTransparency"] = 1;
-G2L["13"]["Size"] = UDim2.new(0, 73, 0, 16);
-G2L["13"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["13"]["Text"] = [[Brainrot]];
-G2L["13"]["Name"] = [[BRAINROTS NAME]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON.100M - INF FRAME.LOG FRAME 100M - INF.MONEY PER SECOND MPS
-G2L["14"] = Instance.new("TextLabel", G2L["12"]);
-G2L["14"]["BorderSizePixel"] = 0;
-G2L["14"]["TextSize"] = 19;
-G2L["14"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["14"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["14"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["14"]["BackgroundTransparency"] = 1;
-G2L["14"]["Size"] = UDim2.new(0, 67, 0, 13);
-G2L["14"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["14"]["Text"] = [[MPS]];
-G2L["14"]["Name"] = [[MONEY PER SECOND MPS]];
-G2L["14"]["Position"] = UDim2.new(0, 0, 0.48718, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON.100M - INF FRAME.LOG FRAME 100M - INF.JOIN SERVER
-G2L["15"] = Instance.new("TextButton", G2L["12"]);
-G2L["15"]["BorderSizePixel"] = 0;
-G2L["15"]["TextSize"] = 22;
-G2L["15"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["15"]["BackgroundColor3"] = Color3.fromRGB(116, 39, 133);
-G2L["15"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["15"]["Size"] = UDim2.new(0, 56, 0, 28);
-G2L["15"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["15"]["Text"] = [[JOIN]];
-G2L["15"]["Name"] = [[JOIN SERVER]];
-G2L["15"]["Position"] = UDim2.new(0.53676, 0, 0.07692, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON.100M - INF FRAME..
-G2L["16"] = Instance.new("UICorner", G2L["11"]);
-G2L["16"]["Name"] = [[.]];
-G2L["16"]["CornerRadius"] = UDim.new(0, 4);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON.100M - INF FRAME..
-G2L["17"] = Instance.new("UIStroke", G2L["11"]);
-G2L["17"]["Transparency"] = 0.7;
-G2L["17"]["Thickness"] = 1.5;
-G2L["17"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-G2L["17"]["Name"] = [[.]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON..
-G2L["18"] = Instance.new("UICorner", G2L["f"]);
-G2L["18"]["Name"] = [[.]];
-G2L["18"]["CornerRadius"] = UDim.new(0, 4);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.100M - INF BUTTON..
-G2L["19"] = Instance.new("UIStroke", G2L["f"]);
-G2L["19"]["Transparency"] = 0.7;
-G2L["19"]["Thickness"] = 1.5;
-G2L["19"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-G2L["19"]["Name"] = [[.]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.DECREPTION
-G2L["1a"] = Instance.new("TextLabel", G2L["2"]);
-G2L["1a"]["ZIndex"] = 2;
-G2L["1a"]["BorderSizePixel"] = 0;
-G2L["1a"]["TextSize"] = 14;
-G2L["1a"]["BackgroundColor3"] = Color3.fromRGB(22, 8, 25);
-G2L["1a"]["FontFace"] = Font.new([[rbxasset://fonts/families/PermanentMarker.json]], Enum.FontWeight.Bold, Enum.FontStyle.Italic);
-G2L["1a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["1a"]["Size"] = UDim2.new(0, 115, 0, 37);
-G2L["1a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1a"]["Text"] = [[COMING SOON!!]];
-G2L["1a"]["Name"] = [[DECREPTION]];
-G2L["1a"]["Position"] = UDim2.new(0.05426, 0, 0.75096, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.DECREPTION..
-G2L["1b"] = Instance.new("UICorner", G2L["1a"]);
-G2L["1b"]["Name"] = [[.]];
-G2L["1b"]["CornerRadius"] = UDim.new(0, 5);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.DECREPTION..
-G2L["1c"] = Instance.new("UIStroke", G2L["1a"]);
-G2L["1c"]["Transparency"] = 0.4;
-G2L["1c"]["Thickness"] = 0.03;
-G2L["1c"]["StrokeSizingMode"] = Enum.StrokeSizingMode.ScaledSize;
-G2L["1c"]["Color"] = Color3.fromRGB(22, 8, 25);
-G2L["1c"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-G2L["1c"]["Name"] = [[.]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.LocalScript
-G2L["1d"] = Instance.new("LocalScript", G2L["2"]);
-
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.RainLayer
-G2L["1e"] = Instance.new("Frame", G2L["2"]);
-G2L["1e"]["ZIndex"] = 0;
-G2L["1e"]["BorderSizePixel"] = 0;
-G2L["1e"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["1e"]["Size"] = UDim2.new(1, 0, 1, 0);
-G2L["1e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1e"]["Name"] = [[RainLayer]];
-G2L["1e"]["BackgroundTransparency"] = 1;
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.RainLayer.LocalScript
-G2L["1f"] = Instance.new("LocalScript", G2L["1e"]);
-
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME..
-G2L["20"] = Instance.new("UICorner", G2L["2"]);
-G2L["20"]["Name"] = [[.]];
-G2L["20"]["CornerRadius"] = UDim.new(0, 5);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME..
-G2L["21"] = Instance.new("UIStroke", G2L["2"]);
-G2L["21"]["Thickness"] = 1.5;
-G2L["21"]["Color"] = Color3.fromRGB(32, 11, 37);
-G2L["21"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-G2L["21"]["Name"] = [[.]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON
-G2L["22"] = Instance.new("TextButton", G2L["2"]);
-G2L["22"]["BorderSizePixel"] = 0;
-G2L["22"]["TextSize"] = 14;
-G2L["22"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["22"]["BackgroundColor3"] = Color3.fromRGB(39, 14, 45);
-G2L["22"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["22"]["ZIndex"] = 2;
-G2L["22"]["BackgroundTransparency"] = 0.3;
-G2L["22"]["Size"] = UDim2.new(0, 115, 0, 25);
-G2L["22"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["22"]["Text"] = [[]];
-G2L["22"]["Name"] = [[10M - 100M BUTTON]];
-G2L["22"]["Position"] = UDim2.new(0.05426, 0, 0.37711, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON.1M - 10M TEXTLABLE
-G2L["23"] = Instance.new("TextLabel", G2L["22"]);
-G2L["23"]["BorderSizePixel"] = 0;
-G2L["23"]["TextSize"] = 18;
-G2L["23"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["23"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["23"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["23"]["BackgroundTransparency"] = 1;
-G2L["23"]["Size"] = UDim2.new(0, 59, 0, -16);
-G2L["23"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["23"]["Text"] = [[10M - 100M]];
-G2L["23"]["Name"] = [[1M - 10M TEXTLABLE]];
-G2L["23"]["Position"] = UDim2.new(0.09565, 0, 0.8, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON.10M - 100M FRAME
-G2L["24"] = Instance.new("Frame", G2L["22"]);
-G2L["24"]["Visible"] = false;
-G2L["24"]["BorderSizePixel"] = 0;
-G2L["24"]["BackgroundColor3"] = Color3.fromRGB(22, 8, 25);
-G2L["24"]["Size"] = UDim2.new(0, 148, 0, 311);
-G2L["24"]["Position"] = UDim2.new(1.13043, 0, -1.4, 0);
-G2L["24"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["24"]["Name"] = [[10M - 100M FRAME]];
-G2L["24"]["BackgroundTransparency"] = 0.2;
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON.10M - 100M FRAME.LOG FRAME 10M - 100M
-G2L["25"] = Instance.new("Frame", G2L["24"]);
-G2L["25"]["BorderSizePixel"] = 0;
-G2L["25"]["BackgroundColor3"] = Color3.fromRGB(60, 21, 69);
-G2L["25"]["Size"] = UDim2.new(0, 136, 0, 34);
-G2L["25"]["Position"] = UDim2.new(0.04054, 0, 0.02251, 0);
-G2L["25"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["25"]["Name"] = [[LOG FRAME 10M - 100M]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON.10M - 100M FRAME.LOG FRAME 10M - 100M.BRAINROTS NAME
-G2L["26"] = Instance.new("TextLabel", G2L["25"]);
-G2L["26"]["BorderSizePixel"] = 0;
-G2L["26"]["TextSize"] = 19;
-G2L["26"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["26"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["26"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["26"]["BackgroundTransparency"] = 1;
-G2L["26"]["Size"] = UDim2.new(0, 73, 0, 16);
-G2L["26"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["26"]["Text"] = [[Brainrot]];
-G2L["26"]["Name"] = [[BRAINROTS NAME]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON.10M - 100M FRAME.LOG FRAME 10M - 100M.MONEY PER SECOND MPS
-G2L["27"] = Instance.new("TextLabel", G2L["25"]);
-G2L["27"]["BorderSizePixel"] = 0;
-G2L["27"]["TextSize"] = 19;
-G2L["27"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["27"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["27"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["27"]["BackgroundTransparency"] = 1;
-G2L["27"]["Size"] = UDim2.new(0, 67, 0, 13);
-G2L["27"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["27"]["Text"] = [[MPS]];
-G2L["27"]["Name"] = [[MONEY PER SECOND MPS]];
-G2L["27"]["Position"] = UDim2.new(0, 0, 0.48718, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON.10M - 100M FRAME.LOG FRAME 10M - 100M.JOIN SERVER
-G2L["28"] = Instance.new("TextButton", G2L["25"]);
-G2L["28"]["BorderSizePixel"] = 0;
-G2L["28"]["TextSize"] = 22;
-G2L["28"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["28"]["BackgroundColor3"] = Color3.fromRGB(116, 39, 133);
-G2L["28"]["FontFace"] = Font.new([[rbxasset://fonts/families/TitilliumWeb.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["28"]["Size"] = UDim2.new(0, 56, 0, 28);
-G2L["28"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["28"]["Text"] = [[JOIN]];
-G2L["28"]["Name"] = [[JOIN SERVER]];
-G2L["28"]["Position"] = UDim2.new(0.53676, 0, 0.07692, 0);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON.10M - 100M FRAME..
-G2L["29"] = Instance.new("UICorner", G2L["24"]);
-G2L["29"]["Name"] = [[.]];
-G2L["29"]["CornerRadius"] = UDim.new(0, 4);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON.10M - 100M FRAME..
-G2L["2a"] = Instance.new("UIStroke", G2L["24"]);
-G2L["2a"]["Transparency"] = 0.7;
-G2L["2a"]["Thickness"] = 1.5;
-G2L["2a"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-G2L["2a"]["Name"] = [[.]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON..
-G2L["2b"] = Instance.new("UICorner", G2L["22"]);
-G2L["2b"]["Name"] = [[.]];
-G2L["2b"]["CornerRadius"] = UDim.new(0, 4);
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.10M - 100M BUTTON..
-G2L["2c"] = Instance.new("UIStroke", G2L["22"]);
-G2L["2c"]["Transparency"] = 0.7;
-G2L["2c"]["Thickness"] = 1.5;
-G2L["2c"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-G2L["2c"]["Name"] = [[.]];
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.LocalScript
-G2L["2d"] = Instance.new("LocalScript", G2L["2"]);
-
-
-
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.LocalScript
-local function C_1d()
-local script = G2L["1d"];
-	local TweenService = game:GetService("TweenService")
-	local main = script.Parent
-	
-	-- Buttons
-	local btn1 = main:WaitForChild("1M - 10M BUTTON")
-	local btn2 = main:WaitForChild("10M - 100M BUTTON")
-	local btn3 = main:WaitForChild("100M - INF BUTTON")
-	
-	-- Frames (INSIDE BUTTONS)
-	local frame1 = btn1:WaitForChild("1M - 10M FRAME")
-	local frame2 = btn2:WaitForChild("10M - 100M FRAME")
-	local frame3 = btn3:WaitForChild("100M - INF FRAME")
-	
-	local frames = {frame1, frame2, frame3}
-	
-	local openInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-	local closeInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-	
-	local offset = UDim2.fromScale(0, 0.08)
-	local currentOpen = nil
-	
-	-- Init
-	for _, frame in ipairs(frames) do
-		frame.Visible = false
-		frame.BackgroundTransparency = 1
-	end
-	
-	local function closeFrame(frame)
-		TweenService:Create(frame, closeInfo, {
-			Position = frame.Position + offset,
-			BackgroundTransparency = 1
-		}):Play()
-	
-		task.delay(0.25, function()
-			frame.Visible = false
-		end)
-	end
-	
-	local function openFrame(frame)
-		frame.Visible = true
-		frame.BackgroundTransparency = 1
-		frame.Position = frame.Position - offset
-	
-		TweenService:Create(frame, openInfo, {
-			Position = frame.Position + offset,
-			BackgroundTransparency = 0
-		}):Play()
-	end
-	
-	local function toggle(frame)
-		if currentOpen == frame then
-			closeFrame(frame)
-			currentOpen = nil
-		else
-			if currentOpen then
-				closeFrame(currentOpen)
-			end
-			openFrame(frame)
-			currentOpen = frame
-		end
-	end
-	
-	btn1.MouseButton1Click:Connect(function()
-		toggle(frame1)
-	end)
-	
-	btn2.MouseButton1Click:Connect(function()
-		toggle(frame2)
-	end)
-	
-	btn3.MouseButton1Click:Connect(function()
-		toggle(frame3)
-	end)
-	
-end;
-task.spawn(C_1d);
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.RainLayer.LocalScript
-local function C_1f()
-local script = G2L["1f"];
-	local TweenService = game:GetService("TweenService")
-	local rainLayer = script.Parent
-	local gui = rainLayer.Parent
-	
-	local RAIN_COUNT = 35
-	local DROP_WIDTH = 2
-	local DROP_HEIGHT_MIN = 25
-	local DROP_HEIGHT_MAX = 60
-	local SPEED_MIN = 0.6
-	local SPEED_MAX = 1.4
-	
-	rainLayer.ClipsDescendants = true
-	
-	local function createDrop()
-		local drop = Instance.new("Frame")
-		drop.BorderSizePixel = 0
-		drop.BackgroundColor3 = Color3.fromRGB(170, 170, 170)
-		drop.BackgroundTransparency = 0.6
-		drop.Size = UDim2.fromOffset(
-			DROP_WIDTH,
-			math.random(DROP_HEIGHT_MIN, DROP_HEIGHT_MAX)
-		)
-		drop.Position = UDim2.new(
-			math.random(),
-			0,
-			-0.2,
-			0
-		)
-		drop.ZIndex = 0
-		drop.Parent = rainLayer
-	
-		local endPos = UDim2.new(
-			drop.Position.X.Scale,
-			0,
-			1.2,
-			0
-		)
-	
-		local tween = TweenService:Create(
-			drop,
-			TweenInfo.new(
-				math.random() * (SPEED_MAX - SPEED_MIN) + SPEED_MIN,
-				Enum.EasingStyle.Linear
-			),
-			{Position = endPos}
-		)
-	
-		tween:Play()
-		tween.Completed:Connect(function()
-			drop:Destroy()
-		end)
-	end
-	
-	-- Loop
-	task.spawn(function()
-		while true do
-			createDrop()
-			task.wait(0.08)
-		end
-	end)
-	
-end;
-task.spawn(C_1f);
--- StarterGui.Krypth AJ / AUTO JOINER.KRYPTH MAIN FRAME.LocalScript
-local function C_2d()
-local script = G2L["2d"];
-	-- Krypth AutoJoiner – Log Controller
-	-- GUI-safe, no redesign, no locked parenting
-	
-	local HttpService = game:GetService("HttpService")
-	local TeleportService = game:GetService("TeleportService")
-	local Players = game:GetService("Players")
-	
-	local player = Players.LocalPlayer
-	
-	-- === CONFIG ===
-	local RELAY_URL = "https://visible-self-furnishings-relatives.trycloudflare.com/submit"
-	local PLACE_ID = game.PlaceId
-	local REFRESH_DELAY = 10 -- seconds
-	
-	-- === GUI REFERENCES ===
-	local main = script.Parent
-	
-	local frames = {
-		{
-			min = 1_000_000,
-			max = 10_000_000,
-			container = main["1M - 10M BUTTON"]["1M - 10M FRAME"]["LOG FRAME 1M - 10M"],
-		},
-		{
-			min = 10_000_000,
-			max = 100_000_000,
-			container = main["10M - 100M BUTTON"]["10M - 100M FRAME"]["LOG FRAME 10M - 100M"],
-		},
-		{
-			min = 100_000_000,
-			max = math.huge,
-			container = main["100M - INF BUTTON"]["100M - INF FRAME"]["LOG FRAME 100M - INF"],
-		},
-	}
-	
-	-- === HELPERS ===
-	local function clearLogs(container)
-		for _, child in ipairs(container:GetChildren()) do
-			if child:IsA("Frame") then
-				child:Destroy()
-			end
-		end
-	end
-	
-	local function parseMoney(moneyStr)
-		-- "$3,700,000/s" → 3700000
-		if not moneyStr then return 0 end
-		local clean = moneyStr:gsub("[^%d]", "")
-		return tonumber(clean) or 0
-	end
-	
-	local function cloneLog(template, parent, data)
-		local log = template:Clone()
-		log.Visible = true
-		log.Parent = parent
-	
-		log["BRAINROTS NAME"].Text = data.brainrot or "Unknown"
-		log["MONEY PER SECOND"].Text = data.money or "$0/s"
-	
-		log["JOIN SERVER"].MouseButton1Click:Connect(function()
-			TeleportService:TeleportToPlaceInstance(
-				PLACE_ID,
-				data.jobId,
-				player
-			)
-		end)
-	end
-	
-	-- === MAIN REFRESH ===
-	local function refresh()
-		local success, response = pcall(function()
-			return HttpService:GetAsync(RELAY_URL)
-		end)
-		if not success then return end
-	
-		local data = HttpService:JSONDecode(response)
-		if type(data) ~= "table" then return end
-	
-		-- Clear all old logs
-		for _, group in ipairs(frames) do
-			clearLogs(group.container)
-		end
-	
-		-- Insert fresh logs
-		for _, server in ipairs(data) do
-			local mps = parseMoney(server.money)
-	
-			for _, group in ipairs(frames) do
-				if mps >= group.min and mps < group.max then
-					local template = group.container:FindFirstChildWhichIsA("Frame")
-					if template then
-						cloneLog(template, group.container, server)
-					end
-					break
-				end
-			end
-		end
-	end
-	
-	-- === LOOP ===
-	task.spawn(function()
-		while true do
-			refresh()
-			task.wait(REFRESH_DELAY)
-		end
-	end)
-	
-end;
-task.spawn(C_2d);
-
-return G2L["1"], require;
+repeat task.wait() until game:IsLoaded()
+
+--// Services
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+local TeleportService = game:GetService("TeleportService")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+
+--// CONFIG
+local RELAY_SERVERS_URL = "https://visible-self-furnishings-relatives.trycloudflare.com/servers"
+local REFRESH_INTERVAL = 5
+
+--// Cleanup old GUI
+pcall(function()
+    local old = CoreGui:FindFirstChild("Krypth AJ")
+    if old then old:Destroy() end
+end)
+
+--// Helpers
+local function formatNumber(n)
+    n = tonumber(n) or 0
+    local s = tostring(math.floor(n))
+    return s:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+end
+
+--// GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Krypth AJ"
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = CoreGui
+
+--// Rain Layer
+local RainLayer = Instance.new("Frame")
+RainLayer.Size = UDim2.fromScale(1,1)
+RainLayer.BackgroundTransparency = 1
+RainLayer.ZIndex = 1
+RainLayer.Parent = ScreenGui
+
+-- Rain effect
+task.spawn(function()
+    while ScreenGui.Parent do
+        local drop = Instance.new("Frame")
+        drop.Size = UDim2.new(0,2,0,math.random(14,22))
+        drop.Position = UDim2.fromScale(math.random(), -0.1)
+        drop.BackgroundColor3 = Color3.fromRGB(120,120,140)
+        drop.BackgroundTransparency = 0.3
+        drop.BorderSizePixel = 0
+        drop.ZIndex = 2
+        drop.Parent = RainLayer
+
+        TweenService:Create(
+            drop,
+            TweenInfo.new(math.random(30,50)/60, Enum.EasingStyle.Linear),
+            {Position = UDim2.fromScale(drop.Position.X.Scale,1.1)}
+        ):Play()
+
+        task.delay(1, function()
+            if drop then drop:Destroy() end
+        end)
+
+        task.wait(0.04)
+    end
+end)
+
+--// Main Frame
+local Main = Instance.new("Frame")
+Main.AnchorPoint = Vector2.new(0.5,0.5)
+Main.Position = UDim2.fromScale(0.5,0.5)
+Main.Size = UDim2.fromScale(0.42,0.6)
+Main.BackgroundColor3 = Color3.fromRGB(15,16,22)
+Main.BorderSizePixel = 0
+Main.ZIndex = 10
+Main.Parent = ScreenGui
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,20)
+
+--// Header
+local Header = Instance.new("TextLabel")
+Header.Size = UDim2.new(1,0,0,70)
+Header.Text = "🧠 Krypth AJ"
+Header.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Bold)
+Header.TextSize = 28
+Header.TextColor3 = Color3.fromRGB(240,240,255)
+Header.BackgroundTransparency = 1
+Header.ZIndex = 11
+Header.Parent = Main
+
+--// Scroll
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Position = UDim2.new(0,20,0,90)
+Scroll.Size = UDim2.new(1,-40,1,-120)
+Scroll.CanvasSize = UDim2.new()
+Scroll.ScrollBarThickness = 6
+Scroll.BackgroundTransparency = 1
+Scroll.ZIndex = 11
+Scroll.Parent = Main
+
+local Layout = Instance.new("UIListLayout")
+Layout.Padding = UDim.new(0,14)
+Layout.Parent = Scroll
+
+Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 20)
+end)
+
+--// Row creator
+local function createRow(brainrot, money, jobId)
+    local Row = Instance.new("Frame")
+    Row.Size = UDim2.new(1,0,0,72)
+    Row.BackgroundColor3 = Color3.fromRGB(22,23,30)
+    Row.BorderSizePixel = 0
+    Row.ZIndex = 12
+    Row.Parent = Scroll
+    Instance.new("UICorner", Row).CornerRadius = UDim.new(0,14)
+
+    local Text = Instance.new("TextLabel")
+    Text.Position = UDim2.new(0,18,0,0)
+    Text.Size = UDim2.new(0.65,-18,1,0)
+    Text.Text = brainrot .. " — " .. money
+    Text.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
+    Text.TextSize = 15
+    Text.TextColor3 = Color3.fromRGB(220,220,235)
+    Text.TextXAlignment = Enum.TextXAlignment.Left
+    Text.BackgroundTransparency = 1
+    Text.ZIndex = 13
+    Text.Parent = Row
+
+    local Join = Instance.new("TextButton")
+    Join.Size = UDim2.new(0,120,0,40)
+    Join.Position = UDim2.new(1,-140,0.5,-20)
+    Join.Text = "JOIN"
+    Join.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Bold)
+    Join.TextSize = 14
+    Join.TextColor3 = Color3.fromRGB(20,20,25)
+    Join.BackgroundColor3 = Color3.fromRGB(80,220,140)
+    Join.BorderSizePixel = 0
+    Join.ZIndex = 13
+    Join.Parent = Row
+    Instance.new("UICorner", Join).CornerRadius = UDim.new(0,12)
+
+    Join.MouseButton1Click:Connect(function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
+    end)
+
+    Row.BackgroundTransparency = 1
+    TweenService:Create(Row, TweenInfo.new(0.35, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+end
+
+--// Clear rows
+local function clearRows()
+    for _,v in ipairs(Scroll:GetChildren()) do
+        if v:IsA("Frame") then
+            v:Destroy()
+        end
+    end
+end
+
+--// Refresh
+local function refresh()
+    local ok, res = pcall(function()
+        return game:HttpGet(RELAY_SERVERS_URL)
+    end)
+    if not ok then return end
+
+    local data = HttpService:JSONDecode(res)
+    if type(data) ~= "table" then return end
+
+    clearRows()
+
+    for _,entry in ipairs(data) do
+        if entry.brainrot and entry.money and entry.jobId then
+            createRow(entry.brainrot, entry.money, entry.jobId)
+        end
+    end
+end
+
+--// Auto refresh loop
+task.spawn(function()
+    while true do
+        refresh()
+        task.wait(REFRESH_INTERVAL)
+    end
+end)
