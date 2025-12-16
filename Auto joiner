@@ -645,7 +645,7 @@ local script = G2L["2d"];
 	local player = Players.LocalPlayer
 	
 	-- === CONFIG ===
-	local RELAY_URL = "https://selections-impression-renaissance-paul.trycloudflare.com/servers"
+	local RELAY_URL = "https://visible-self-furnishings-relatives.trycloudflare.com/submit"
 	local PLACE_ID = game.PlaceId
 	local REFRESH_DELAY = 10 -- seconds
 	
