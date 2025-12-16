@@ -14,11 +14,10 @@ local RELAY_URL = "https://selections-impression-renaissance-paul.trycloudflare.
 local REFRESH_TIME = 6
 local PLACE_ID = game.PlaceId
 
--- SESSION CACHE (prevents old logs)
+-- SESSION CACHE
 local seenJobs = {}
-local sessionStart = os.time()
 
--- CLEAN OLD GUI
+-- REMOVE OLD GUI
 pcall(function()
     local old = CoreGui:FindFirstChild("Krypth AutoJoiner")
     if old then old:Destroy() end
@@ -33,14 +32,14 @@ local function formatMoney(n)
     return "$" .. s .. "/s"
 end
 
-local function parseMoney(str)
-    if type(str) == "number" then return str end
-    if not str then return 0 end
-    str = tostring(str):gsub("[%$,/s%s]", "")
-    return tonumber(str) or 0
+local function parseMoney(v)
+    if type(v) == "number" then return v end
+    if not v then return 0 end
+    v = tostring(v):gsub("[%$,/s%s]", "")
+    return tonumber(v) or 0
 end
 
--- GUI BASE
+-- GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Krypth AutoJoiner"
 ScreenGui.IgnoreGuiInset = true
@@ -57,8 +56,8 @@ Main.Parent = ScreenGui
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 18)
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -20, 0, 60)
 Title.Position = UDim2.new(0, 20, 0, 0)
+Title.Size = UDim2.new(1, -40, 0, 60)
 Title.Text = "🧠 Krypth AutoJoiner"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 20
@@ -76,6 +75,7 @@ Scroll.BackgroundTransparency = 1
 Scroll.BorderSizePixel = 0
 Scroll.Parent = Main
 
+-- CREATE LAYOUT ONCE
 local Layout = Instance.new("UIListLayout")
 Layout.Padding = UDim.new(0, 12)
 Layout.Parent = Scroll
@@ -84,7 +84,7 @@ Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 10)
 end)
 
--- ROW CREATION
+-- ROW
 local function createRow(brainrot, money, jobId)
     local Row = Instance.new("Frame")
     Row.Size = UDim2.new(1, 0, 0, 64)
@@ -132,10 +132,18 @@ local function createRow(brainrot, money, jobId)
     end)
 end
 
--- DATA REFRESH
+-- CLEAR ROWS ONLY (KEEP LAYOUT)
+local function clearRows()
+    for _, child in ipairs(Scroll:GetChildren()) do
+        if not child:IsA("UIListLayout") then
+            child:Destroy()
+        end
+    end
+end
+
+-- REFRESH
 local function refresh()
-    Scroll:ClearAllChildren()
-    Layout.Parent = Scroll
+    clearRows()
 
     local ok, body = pcall(function()
         return game:HttpGet(RELAY_URL)
