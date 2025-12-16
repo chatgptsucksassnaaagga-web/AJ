@@ -1,158 +1,167 @@
 repeat task.wait() until game:IsLoaded()
 
 -- SERVICES
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
 local LocalPlayer = Players.LocalPlayer
 
--- RELAY
+-- CONFIG
 local RELAY_URL = "https://selections-impression-renaissance-paul.trycloudflare.com/servers"
+local REFRESH_TIME = 6
+local PLACE_ID = game.PlaceId
 
--- CACHE
-local SeenJobs = {}
+-- SESSION CACHE (prevents old logs)
+local seenJobs = {}
+local sessionStart = os.time()
 
--- CLEAN GUI
+-- CLEAN OLD GUI
 pcall(function()
-    local g = CoreGui:FindFirstChild("Krypth AutoJoiner")
-    if g then g:Destroy() end
+    local old = CoreGui:FindFirstChild("Krypth AutoJoiner")
+    if old then old:Destroy() end
 end)
 
--- FORMATTERS
-local function parseMPS(data)
-    if typeof(data.mps) == "number" and data.mps > 0 then
-        return data.mps
-    end
-
-    if typeof(data.money) == "string" then
-        local num = tonumber(data.money:gsub("[^%d]", ""))
-        if num and num > 0 then
-            return num
-        end
-    end
-
-    return nil
-end
-
+-- HELPERS
 local function formatMoney(n)
+    n = tonumber(n) or 0
     local s = tostring(math.floor(n))
-    local r = s:reverse():gsub("(%d%d%d)", "%1,"):reverse()
-    if r:sub(1,1) == "," then r = r:sub(2) end
-    return "$" .. r .. "/s"
+    s = s:reverse():gsub("(%d%d%d)", "%1,"):reverse()
+    if s:sub(1,1) == "," then s = s:sub(2) end
+    return "$" .. s .. "/s"
 end
 
--- UI ROOT
-local ScreenGui = Instance.new("ScreenGui", CoreGui)
+local function parseMoney(str)
+    if type(str) == "number" then return str end
+    if not str then return 0 end
+    str = tostring(str):gsub("[%$,/s%s]", "")
+    return tonumber(str) or 0
+end
+
+-- GUI BASE
+local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Krypth AutoJoiner"
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = CoreGui
 
-local Main = Instance.new("Frame", ScreenGui)
-Main.AnchorPoint = Vector2.new(0.5,0.5)
-Main.Position = UDim2.fromScale(0.5,0.5)
-Main.Size = UDim2.fromScale(0.46,0.6)
+local Main = Instance.new("Frame")
+Main.AnchorPoint = Vector2.new(0.5, 0.5)
+Main.Position = UDim2.fromScale(0.5, 0.5)
+Main.Size = UDim2.fromScale(0.45, 0.55)
 Main.BackgroundColor3 = Color3.fromRGB(17,17,22)
 Main.BorderSizePixel = 0
-Main.ClipsDescendants = true
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0,20)
+Main.Parent = ScreenGui
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 18)
 
--- HEADER
-local Header = Instance.new("Frame", Main)
-Header.Size = UDim2.new(1,0,0,70)
-Header.BackgroundTransparency = 1
-
-local Title = Instance.new("TextLabel", Header)
-Title.Position = UDim2.new(0,20,0,0)
-Title.Size = UDim2.new(1,-100,1,0)
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -20, 0, 60)
+Title.Position = UDim2.new(0, 20, 0, 0)
 Title.Text = "🧠 Krypth AutoJoiner"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 21
+Title.TextSize = 20
 Title.TextColor3 = Color3.fromRGB(235,235,245)
-Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.BackgroundTransparency = 1
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Main
 
--- SCROLL
-local Scroll = Instance.new("ScrollingFrame", Main)
-Scroll.Position = UDim2.new(0,18,0,80)
-Scroll.Size = UDim2.new(1,-36,1,-98)
-Scroll.CanvasSize = UDim2.new()
-Scroll.ScrollBarThickness = 6
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Position = UDim2.new(0, 16, 0, 70)
+Scroll.Size = UDim2.new(1, -32, 1, -86)
+Scroll.CanvasSize = UDim2.new(0,0,0,0)
+Scroll.ScrollBarThickness = 5
 Scroll.BackgroundTransparency = 1
+Scroll.BorderSizePixel = 0
+Scroll.Parent = Main
 
-local Layout = Instance.new("UIListLayout", Scroll)
-Layout.Padding = UDim.new(0,12)
+local Layout = Instance.new("UIListLayout")
+Layout.Padding = UDim.new(0, 12)
+Layout.Parent = Scroll
 
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 20)
+    Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 10)
 end)
 
--- ROW
-local function createRow(data)
-    if not data.jobId or SeenJobs[data.jobId] then return end
-
-    local mps = parseMPS(data)
-    if not mps then return end
-
-    SeenJobs[data.jobId] = true
-
-    local brainrot = tostring(
-        data.brainrot or data.bestBrainrot or "Unknown"
-    )
-
-    local Row = Instance.new("Frame", Scroll)
-    Row.Size = UDim2.new(1,0,0,68)
-    Row.BackgroundColor3 = Color3.fromRGB(23,23,30)
+-- ROW CREATION
+local function createRow(brainrot, money, jobId)
+    local Row = Instance.new("Frame")
+    Row.Size = UDim2.new(1, 0, 0, 64)
+    Row.BackgroundColor3 = Color3.fromRGB(24,24,30)
     Row.BorderSizePixel = 0
-    Instance.new("UICorner", Row).CornerRadius = UDim.new(0,16)
+    Row.Parent = Scroll
+    Instance.new("UICorner", Row).CornerRadius = UDim.new(0, 14)
 
-    local Text = Instance.new("TextLabel", Row)
-    Text.Position = UDim2.new(0,16,0,6)
-    Text.Size = UDim2.new(0.6,0,1,-12)
-    Text.TextWrapped = true
-    Text.TextXAlignment = Enum.TextXAlignment.Left
-    Text.TextYAlignment = Enum.TextYAlignment.Center
-    Text.Font = Enum.Font.Gotham
-    Text.TextSize = 13
-    Text.TextColor3 = Color3.fromRGB(220,220,230)
-    Text.BackgroundTransparency = 1
-    Text.Text = brainrot .. "\n" .. formatMoney(mps)
+    local Name = Instance.new("TextLabel")
+    Name.Position = UDim2.new(0, 16, 0, 10)
+    Name.Size = UDim2.new(0.6, -16, 0, 22)
+    Name.Text = brainrot
+    Name.Font = Enum.Font.GothamBold
+    Name.TextSize = 15
+    Name.TextColor3 = Color3.fromRGB(230,230,240)
+    Name.BackgroundTransparency = 1
+    Name.TextXAlignment = Enum.TextXAlignment.Left
+    Name.Parent = Row
 
-    local Join = Instance.new("TextButton", Row)
-    Join.Size = UDim2.new(0,120,0,38)
-    Join.Position = UDim2.new(1,-140,0.5,-19)
+    local Money = Instance.new("TextLabel")
+    Money.Position = UDim2.new(0, 16, 0, 32)
+    Money.Size = UDim2.new(0.6, -16, 0, 20)
+    Money.Text = formatMoney(money)
+    Money.Font = Enum.Font.Gotham
+    Money.TextSize = 13
+    Money.TextColor3 = Color3.fromRGB(160,200,160)
+    Money.BackgroundTransparency = 1
+    Money.TextXAlignment = Enum.TextXAlignment.Left
+    Money.Parent = Row
+
+    local Join = Instance.new("TextButton")
+    Join.Size = UDim2.new(0, 120, 0, 38)
+    Join.Position = UDim2.new(1, -136, 0.5, -19)
     Join.Text = "JOIN"
     Join.Font = Enum.Font.GothamBold
     Join.TextSize = 14
-    Join.TextColor3 = Color3.fromRGB(18,18,22)
-    Join.BackgroundColor3 = Color3.fromRGB(45,200,125)
+    Join.TextColor3 = Color3.fromRGB(20,20,25)
+    Join.BackgroundColor3 = Color3.fromRGB(60,210,140)
     Join.BorderSizePixel = 0
-    Instance.new("UICorner", Join).CornerRadius = UDim.new(0,12)
+    Join.Parent = Row
+    Instance.new("UICorner", Join).CornerRadius = UDim.new(0, 12)
 
     Join.MouseButton1Click:Connect(function()
-        TeleportService:TeleportToPlaceInstance(
-            data.placeId,
-            data.jobId,
-            LocalPlayer
-        )
+        TeleportService:TeleportToPlaceInstance(PLACE_ID, jobId, LocalPlayer)
     end)
 end
 
--- FETCH LOOP
-task.spawn(function()
-    while true do
-        task.wait(3)
+-- DATA REFRESH
+local function refresh()
+    Scroll:ClearAllChildren()
+    Layout.Parent = Scroll
 
-        local ok, res = pcall(function()
-            return HttpService:JSONDecode(game:HttpGet(RELAY_URL))
-        end)
+    local ok, body = pcall(function()
+        return game:HttpGet(RELAY_URL)
+    end)
+    if not ok then return end
 
-        if ok and type(res) == "table" then
-            for _, server in ipairs(res) do
-                createRow(server)
+    local data = HttpService:JSONDecode(body)
+    for _, entry in ipairs(data) do
+        local jobId = entry.jobId
+        if jobId and not seenJobs[jobId] then
+            seenJobs[jobId] = true
+
+            local brainrot = entry.bestBrainrot or entry.brainrot or "Unknown"
+            local money = entry.mps or parseMoney(entry.money)
+
+            if money > 0 then
+                createRow(brainrot, money, jobId)
             end
         end
+    end
+end
+
+-- LOOP
+task.spawn(function()
+    while true do
+        refresh()
+        task.wait(REFRESH_TIME)
     end
 end)
