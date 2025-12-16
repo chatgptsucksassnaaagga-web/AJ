@@ -12,27 +12,32 @@ local LocalPlayer = Players.LocalPlayer
 -- RELAY
 local RELAY_URL = "https://selections-impression-renaissance-paul.trycloudflare.com/servers"
 
--- ANTI-DUPE CACHE
+-- CACHE
 local SeenJobs = {}
 
--- CLEAN OLD GUI
+-- CLEAN GUI
 pcall(function()
-    local old = CoreGui:FindFirstChild("Krypth AutoJoiner")
-    if old then old:Destroy() end
+    local g = CoreGui:FindFirstChild("Krypth AutoJoiner")
+    if g then g:Destroy() end
 end)
 
--- UI HELPERS
-local function doTween(obj, props, t)
-    TweenService:Create(
-        obj,
-        TweenInfo.new(t or 0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-        props
-    ):Play()
+-- FORMATTERS
+local function parseMPS(data)
+    if typeof(data.mps) == "number" and data.mps > 0 then
+        return data.mps
+    end
+
+    if typeof(data.money) == "string" then
+        local num = tonumber(data.money:gsub("[^%d]", ""))
+        if num and num > 0 then
+            return num
+        end
+    end
+
+    return nil
 end
 
--- FORMAT MONEY
 local function formatMoney(n)
-    n = tonumber(n) or 0
     local s = tostring(math.floor(n))
     local r = s:reverse():gsub("(%d%d%d)", "%1,"):reverse()
     if r:sub(1,1) == "," then r = r:sub(2) end
@@ -40,103 +45,84 @@ local function formatMoney(n)
 end
 
 -- UI ROOT
-local ScreenGui = Instance.new("ScreenGui")
+local ScreenGui = Instance.new("ScreenGui", CoreGui)
 ScreenGui.Name = "Krypth AutoJoiner"
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = CoreGui
 
-local Shadow = Instance.new("ImageLabel")
-Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-Shadow.Position = UDim2.fromScale(0.5, 0.5)
-Shadow.Size = UDim2.fromScale(0.5, 0.65)
-Shadow.Image = "rbxassetid://1316045217"
-Shadow.ImageTransparency = 0.45
-Shadow.ScaleType = Enum.ScaleType.Slice
-Shadow.SliceCenter = Rect.new(10,10,118,118)
-Shadow.BackgroundTransparency = 1
-Shadow.Parent = ScreenGui
-
-local Main = Instance.new("Frame")
-Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.Position = UDim2.fromScale(0.5, 0.5)
-Main.Size = UDim2.fromScale(0.46, 0.6)
+local Main = Instance.new("Frame", ScreenGui)
+Main.AnchorPoint = Vector2.new(0.5,0.5)
+Main.Position = UDim2.fromScale(0.5,0.5)
+Main.Size = UDim2.fromScale(0.46,0.6)
 Main.BackgroundColor3 = Color3.fromRGB(17,17,22)
 Main.BorderSizePixel = 0
 Main.ClipsDescendants = true
-Main.Parent = ScreenGui
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0,20)
 
 -- HEADER
 local Header = Instance.new("Frame", Main)
-Header.Size = UDim2.new(1,0,0,72)
+Header.Size = UDim2.new(1,0,0,70)
 Header.BackgroundTransparency = 1
 
 local Title = Instance.new("TextLabel", Header)
-Title.Position = UDim2.new(0,22,0,0)
-Title.Size = UDim2.new(1,-120,1,0)
+Title.Position = UDim2.new(0,20,0,0)
+Title.Size = UDim2.new(1,-100,1,0)
 Title.Text = "🧠 Krypth AutoJoiner"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 22
+Title.TextSize = 21
 Title.TextColor3 = Color3.fromRGB(235,235,245)
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.BackgroundTransparency = 1
 
-local MinBtn = Instance.new("TextButton", Header)
-MinBtn.Size = UDim2.new(0,38,0,38)
-MinBtn.Position = UDim2.new(1,-54,0.5,-19)
-MinBtn.Text = "—"
-MinBtn.Font = Enum.Font.GothamBold
-MinBtn.TextSize = 22
-MinBtn.TextColor3 = Color3.fromRGB(235,235,245)
-MinBtn.BackgroundColor3 = Color3.fromRGB(30,30,38)
-MinBtn.BorderSizePixel = 0
-Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0,12)
-
 -- SCROLL
 local Scroll = Instance.new("ScrollingFrame", Main)
-Scroll.Position = UDim2.new(0,18,0,90)
-Scroll.Size = UDim2.new(1,-36,1,-110)
+Scroll.Position = UDim2.new(0,18,0,80)
+Scroll.Size = UDim2.new(1,-36,1,-98)
 Scroll.CanvasSize = UDim2.new()
 Scroll.ScrollBarThickness = 6
 Scroll.BackgroundTransparency = 1
 
 local Layout = Instance.new("UIListLayout", Scroll)
-Layout.Padding = UDim.new(0,14)
+Layout.Padding = UDim.new(0,12)
 
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 20)
 end)
 
--- ROW CREATOR
+-- ROW
 local function createRow(data)
-    if SeenJobs[data.jobId] then return end
+    if not data.jobId or SeenJobs[data.jobId] then return end
+
+    local mps = parseMPS(data)
+    if not mps then return end
+
     SeenJobs[data.jobId] = true
 
+    local brainrot = tostring(
+        data.brainrot or data.bestBrainrot or "Unknown"
+    )
+
     local Row = Instance.new("Frame", Scroll)
-    Row.Size = UDim2.new(1,0,0,70)
+    Row.Size = UDim2.new(1,0,0,68)
     Row.BackgroundColor3 = Color3.fromRGB(23,23,30)
     Row.BorderSizePixel = 0
     Instance.new("UICorner", Row).CornerRadius = UDim.new(0,16)
 
     local Text = Instance.new("TextLabel", Row)
-    Text.Position = UDim2.new(0,18,0,8)
-    Text.Size = UDim2.new(0.6,0,1,-16)
+    Text.Position = UDim2.new(0,16,0,6)
+    Text.Size = UDim2.new(0.6,0,1,-12)
     Text.TextWrapped = true
     Text.TextXAlignment = Enum.TextXAlignment.Left
     Text.TextYAlignment = Enum.TextYAlignment.Center
     Text.Font = Enum.Font.Gotham
-    Text.TextSize = 14
+    Text.TextSize = 13
     Text.TextColor3 = Color3.fromRGB(220,220,230)
     Text.BackgroundTransparency = 1
-    Text.Text =
-        tostring(data.brainrot or data.bestBrainrot or "Unknown")
-        .. "\n"
-        .. formatMoney(data.mps or tonumber((data.money or ""):gsub("[^%d]", "")))
+    Text.Text = brainrot .. "\n" .. formatMoney(mps)
 
     local Join = Instance.new("TextButton", Row)
-    Join.Size = UDim2.new(0,120,0,40)
-    Join.Position = UDim2.new(1,-140,0.5,-20)
+    Join.Size = UDim2.new(0,120,0,38)
+    Join.Position = UDim2.new(1,-140,0.5,-19)
     Join.Text = "JOIN"
     Join.Font = Enum.Font.GothamBold
     Join.TextSize = 14
@@ -168,20 +154,5 @@ task.spawn(function()
                 createRow(server)
             end
         end
-    end
-end)
-
--- MINIMIZE
-local minimized = false
-local fullSize = Main.Size
-
-MinBtn.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    if minimized then
-        doTween(Main, {Size = UDim2.new(fullSize.X.Scale,0,0,72)}, 0.3)
-        Scroll.Visible = false
-    else
-        doTween(Main, {Size = fullSize}, 0.4)
-        Scroll.Visible = true
     end
 end)
