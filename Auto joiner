@@ -1,12 +1,18 @@
+--====================================
+-- Krypth AutoJoiner GUI (RELAY)
+--====================================
+
 repeat task.wait() until game:IsLoaded()
 
+-- ===== CONFIG =====
 local RELAY_FETCH = "https://selections-impression-renaissance-paul.trycloudflare.com/latest"
 
+-- ===== SERVICES =====
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
@@ -15,49 +21,78 @@ pcall(function()
     if old then old:Destroy() end
 end)
 
--- GUI BUILD (UNCHANGED STYLE)
+-- ===== GUI BUILD =====
+local function tween(o,p,t)
+    TweenService:Create(o,TweenInfo.new(t or 0.35,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),p):Play()
+end
+
 local ScreenGui = Instance.new("ScreenGui", CoreGui)
 ScreenGui.Name = "Krypth AutoJoiner"
 ScreenGui.ResetOnSpawn = false
+
+local Shadow = Instance.new("ImageLabel", ScreenGui)
+Shadow.AnchorPoint = Vector2.new(0.5,0.5)
+Shadow.Position = UDim2.fromScale(0.5,0.5)
+Shadow.Size = UDim2.fromScale(0.5,0.65)
+Shadow.Image = "rbxassetid://1316045217"
+Shadow.ImageTransparency = 0.45
+Shadow.BackgroundTransparency = 1
 
 local Main = Instance.new("Frame", ScreenGui)
 Main.AnchorPoint = Vector2.new(0.5,0.5)
 Main.Position = UDim2.fromScale(0.5,0.5)
 Main.Size = UDim2.fromScale(0.46,0.6)
 Main.BackgroundColor3 = Color3.fromRGB(17,17,22)
+Main.BorderSizePixel = 0
 Instance.new("UICorner",Main).CornerRadius = UDim.new(0,20)
 
-local Title = Instance.new("TextLabel",Main)
-Title.Size = UDim2.new(1,0,0,72)
+local Header = Instance.new("Frame", Main)
+Header.Size = UDim2.new(1,0,0,72)
+Header.BackgroundTransparency = 1
+
+local Title = Instance.new("TextLabel", Header)
+Title.Position = UDim2.new(0,22,0,0)
+Title.Size = UDim2.new(1,-120,1,0)
 Title.Text = "🧠 Krypth AutoJoiner"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 23
 Title.TextColor3 = Color3.fromRGB(235,235,245)
 Title.BackgroundTransparency = 1
+Title.TextXAlignment = Left
 
-local Scroll = Instance.new("ScrollingFrame",Main)
+local MinBtn = Instance.new("TextButton", Header)
+MinBtn.Size = UDim2.new(0,38,0,38)
+MinBtn.Position = UDim2.new(1,-54,0.5,-19)
+MinBtn.Text = "—"
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.TextSize = 22
+MinBtn.BackgroundColor3 = Color3.fromRGB(30,30,38)
+MinBtn.TextColor3 = Color3.fromRGB(235,235,245)
+Instance.new("UICorner",MinBtn).CornerRadius = UDim.new(0,12)
+
+local Scroll = Instance.new("ScrollingFrame", Main)
 Scroll.Position = UDim2.new(0,18,0,90)
 Scroll.Size = UDim2.new(1,-36,1,-110)
 Scroll.ScrollBarThickness = 6
 Scroll.BackgroundTransparency = 1
+Scroll.CanvasSize = UDim2.new()
 
-local Layout = Instance.new("UIListLayout",Scroll)
+local Layout = Instance.new("UIListLayout", Scroll)
 Layout.Padding = UDim.new(0,14)
-
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y+20)
+    Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 20)
 end)
 
--- ROW CREATION (FIXED)
+-- ===== ROW =====
 local function createRow(data)
-    local Row = Instance.new("Frame",Scroll)
+    local Row = Instance.new("Frame", Scroll)
     Row.Size = UDim2.new(1,0,0,70)
     Row.BackgroundColor3 = Color3.fromRGB(23,23,30)
     Instance.new("UICorner",Row).CornerRadius = UDim.new(0,16)
 
-    local Text = Instance.new("TextLabel",Row)
+    local Text = Instance.new("TextLabel", Row)
     Text.Position = UDim2.new(0,22,0,0)
-    Text.Size = UDim2.new(0.6,-22,1,0)
+    Text.Size = UDim2.new(0.65,-22,1,0)
     Text.Text = data.brainrot.."  "..data.money
     Text.Font = Enum.Font.GothamBold
     Text.TextSize = 16
@@ -65,7 +100,7 @@ local function createRow(data)
     Text.BackgroundTransparency = 1
     Text.TextXAlignment = Left
 
-    local Join = Instance.new("TextButton",Row)
+    local Join = Instance.new("TextButton", Row)
     Join.Size = UDim2.new(0,130,0,42)
     Join.Position = UDim2.new(1,-150,0.5,-21)
     Join.Text = "JOIN"
@@ -83,20 +118,36 @@ local function createRow(data)
     end)
 end
 
--- FETCH LOOP
+-- ===== FETCH LOOP (NO UI BUGS) =====
 task.spawn(function()
     while true do
         task.wait(3)
 
-        Scroll:ClearAllChildren()
-        Layout.Parent = Scroll
+        for _, c in ipairs(Scroll:GetChildren()) do
+            if c:IsA("Frame") then c:Destroy() end
+        end
 
-        local ok,res = pcall(function()
+        local ok, data = pcall(function()
             return HttpService:JSONDecode(game:HttpGet(RELAY_FETCH))
         end)
 
-        if ok and res then
-            createRow(res)
+        if ok and data then
+            createRow(data)
         end
+    end
+end)
+
+-- ===== MINIMIZE =====
+local minimized = false
+local fullSize = Main.Size
+
+MinBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        tween(Main,{Size=UDim2.new(fullSize.X.Scale,0,0,72)},0.35)
+        Scroll.Visible = false
+    else
+        tween(Main,{Size=fullSize},0.4)
+        Scroll.Visible = true
     end
 end)
