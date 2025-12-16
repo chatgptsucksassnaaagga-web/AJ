@@ -1,10 +1,10 @@
 --====================================
--- Krypth AutoJoiner GUI (RELAY) FINAL
+-- Krypth AutoJoiner GUI (MIXED LOG FIX)
 --====================================
 
 repeat task.wait() until game:IsLoaded()
 
--- ===== HARD CLEAN =====
+-- ===== CLEAN GUI =====
 local CoreGui = game:GetService("CoreGui")
 for _,v in ipairs(CoreGui:GetChildren()) do
     if v.Name == "Krypth AutoJoiner" then
@@ -13,7 +13,7 @@ for _,v in ipairs(CoreGui:GetChildren()) do
 end
 
 -- ===== CONFIG =====
-local RELAY_FETCH = "https://selections-impression-renaissance-paul.trycloudflare.com/latest"
+local RELAY_URL = "https://selections-impression-renaissance-paul.trycloudflare.com/servers"
 
 -- ===== SERVICES =====
 local Players = game:GetService("Players")
@@ -23,7 +23,14 @@ local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
--- ===== TWEEN =====
+-- ===== HELPERS =====
+local function formatMoney(n)
+    n = math.floor(n)
+    local s = tostring(n):reverse():gsub("(%d%d%d)", "%1,"):reverse()
+    if s:sub(1,1) == "," then s = s:sub(2) end
+    return "$"..s.."/s"
+end
+
 local function tween(o,p,t)
     TweenService:Create(
         o,
@@ -33,15 +40,12 @@ local function tween(o,p,t)
 end
 
 -- ===== GUI ROOT =====
-local ScreenGui = Instance.new("ScreenGui")
+local ScreenGui = Instance.new("ScreenGui", CoreGui)
 ScreenGui.Name = "Krypth AutoJoiner"
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = CoreGui
 
--- ===== SHADOW =====
-local Shadow = Instance.new("ImageLabel")
-Shadow.Parent = ScreenGui
+local Shadow = Instance.new("ImageLabel", ScreenGui)
 Shadow.AnchorPoint = Vector2.new(0.5,0.5)
 Shadow.Position = UDim2.fromScale(0.5,0.5)
 Shadow.Size = UDim2.fromScale(0.5,0.65)
@@ -49,9 +53,7 @@ Shadow.Image = "rbxassetid://1316045217"
 Shadow.ImageTransparency = 0.45
 Shadow.BackgroundTransparency = 1
 
--- ===== MAIN =====
-local Main = Instance.new("Frame")
-Main.Parent = ScreenGui
+local Main = Instance.new("Frame", ScreenGui)
 Main.AnchorPoint = Vector2.new(0.5,0.5)
 Main.Position = UDim2.fromScale(0.5,0.5)
 Main.Size = UDim2.fromScale(0.46,0.6)
@@ -61,13 +63,11 @@ Main.ClipsDescendants = true
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0,20)
 
 -- ===== HEADER =====
-local Header = Instance.new("Frame")
-Header.Parent = Main
+local Header = Instance.new("Frame", Main)
 Header.Size = UDim2.new(1,0,0,72)
 Header.BackgroundTransparency = 1
 
-local Title = Instance.new("TextLabel")
-Title.Parent = Header
+local Title = Instance.new("TextLabel", Header)
 Title.Position = UDim2.new(0,22,0,0)
 Title.Size = UDim2.new(1,-120,1,0)
 Title.Text = "🧠 Krypth AutoJoiner"
@@ -78,8 +78,7 @@ Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.TextYAlignment = Enum.TextYAlignment.Center
 
-local MinBtn = Instance.new("TextButton")
-MinBtn.Parent = Header
+local MinBtn = Instance.new("TextButton", Header)
 MinBtn.Size = UDim2.new(0,38,0,38)
 MinBtn.Position = UDim2.new(1,-54,0.5,-19)
 MinBtn.Text = "—"
@@ -91,17 +90,14 @@ MinBtn.BorderSizePixel = 0
 Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0,12)
 
 -- ===== SCROLL =====
-local Scroll = Instance.new("ScrollingFrame")
-Scroll.Parent = Main
+local Scroll = Instance.new("ScrollingFrame", Main)
 Scroll.Position = UDim2.new(0,18,0,90)
 Scroll.Size = UDim2.new(1,-36,1,-110)
 Scroll.CanvasSize = UDim2.new(0,0,0,0)
 Scroll.ScrollBarThickness = 6
 Scroll.BackgroundTransparency = 1
-Scroll.BorderSizePixel = 0
 
-local Layout = Instance.new("UIListLayout")
-Layout.Parent = Scroll
+local Layout = Instance.new("UIListLayout", Scroll)
 Layout.Padding = UDim.new(0,14)
 
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -109,19 +105,21 @@ Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 end)
 
 -- ===== ROW =====
-local function createRow(data)
-    local Row = Instance.new("Frame")
-    Row.Parent = Scroll
+local function createRow(entry)
+    local brainrot = entry.bestBrainrot or entry.brainrot or "Unknown"
+    local money = entry.money or formatMoney(entry.mps or 0)
+    local players = entry.players and entry.maxPlayers and (" ("..entry.players.."/"..entry.maxPlayers..")") or ""
+
+    local Row = Instance.new("Frame", Scroll)
     Row.Size = UDim2.new(1,0,0,70)
     Row.BackgroundColor3 = Color3.fromRGB(23,23,30)
     Row.BorderSizePixel = 0
     Instance.new("UICorner", Row).CornerRadius = UDim.new(0,16)
 
-    local Text = Instance.new("TextLabel")
-    Text.Parent = Row
+    local Text = Instance.new("TextLabel", Row)
     Text.Position = UDim2.new(0,22,0,0)
     Text.Size = UDim2.new(0.65,-22,1,0)
-    Text.Text = data.brainrot.."  "..data.money
+    Text.Text = brainrot.."  "..money..players
     Text.Font = Enum.Font.GothamBold
     Text.TextSize = 16
     Text.TextColor3 = Color3.fromRGB(220,220,230)
@@ -129,8 +127,7 @@ local function createRow(data)
     Text.TextXAlignment = Enum.TextXAlignment.Left
     Text.TextYAlignment = Enum.TextYAlignment.Center
 
-    local Join = Instance.new("TextButton")
-    Join.Parent = Row
+    local Join = Instance.new("TextButton", Row)
     Join.Size = UDim2.new(0,130,0,42)
     Join.Position = UDim2.new(1,-150,0.5,-21)
     Join.Text = "JOIN"
@@ -143,8 +140,8 @@ local function createRow(data)
 
     Join.MouseButton1Click:Connect(function()
         TeleportService:TeleportToPlaceInstance(
-            data.placeId,
-            data.jobId,
+            entry.placeId,
+            entry.jobId,
             LocalPlayer
         )
     end)
@@ -162,11 +159,15 @@ task.spawn(function()
         end
 
         local ok, data = pcall(function()
-            return HttpService:JSONDecode(game:HttpGet(RELAY_FETCH))
+            return HttpService:JSONDecode(game:HttpGet(RELAY_URL))
         end)
 
-        if ok and data then
-            createRow(data)
+        if ok and type(data) == "table" then
+            for _,entry in ipairs(data) do
+                if entry.jobId and entry.placeId then
+                    createRow(entry)
+                end
+            end
         end
     end
 end)
