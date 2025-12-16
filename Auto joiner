@@ -1,5 +1,5 @@
 --====================================
--- Krypth AutoJoiner GUI (MIXED LOG FIX)
+-- Krypth AutoJoiner GUI (FINAL FIX)
 --====================================
 
 repeat task.wait() until game:IsLoaded()
@@ -72,7 +72,7 @@ Title.Position = UDim2.new(0,22,0,0)
 Title.Size = UDim2.new(1,-120,1,0)
 Title.Text = "🧠 Krypth AutoJoiner"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 23
+Title.TextSize = 22
 Title.TextColor3 = Color3.fromRGB(235,235,245)
 Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -98,7 +98,7 @@ Scroll.ScrollBarThickness = 6
 Scroll.BackgroundTransparency = 1
 
 local Layout = Instance.new("UIListLayout", Scroll)
-Layout.Padding = UDim.new(0,14)
+Layout.Padding = UDim.new(0,12)
 
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 20)
@@ -106,33 +106,57 @@ end)
 
 -- ===== ROW =====
 local function createRow(entry)
-    local brainrot = entry.bestBrainrot or entry.brainrot or "Unknown"
-    local money = entry.money or formatMoney(entry.mps or 0)
-    local players = entry.players and entry.maxPlayers and (" ("..entry.players.."/"..entry.maxPlayers..")") or ""
+    local brainrot =
+        entry.bestBrainrot
+        or entry.brainrot
+        or "Unknown Brainrot"
+
+    local money =
+        entry.money
+        or (entry.mps and formatMoney(entry.mps))
+        or "$0/s"
+
+    local players = ""
+    if entry.players and entry.maxPlayers then
+        players = entry.players.."/"..entry.maxPlayers
+    end
 
     local Row = Instance.new("Frame", Scroll)
-    Row.Size = UDim2.new(1,0,0,70)
+    Row.Size = UDim2.new(1,0,0,78)
     Row.BackgroundColor3 = Color3.fromRGB(23,23,30)
     Row.BorderSizePixel = 0
     Instance.new("UICorner", Row).CornerRadius = UDim.new(0,16)
 
-    local Text = Instance.new("TextLabel", Row)
-    Text.Position = UDim2.new(0,22,0,0)
-    Text.Size = UDim2.new(0.65,-22,1,0)
-    Text.Text = brainrot.."  "..money..players
-    Text.Font = Enum.Font.GothamBold
-    Text.TextSize = 16
-    Text.TextColor3 = Color3.fromRGB(220,220,230)
-    Text.BackgroundTransparency = 1
-    Text.TextXAlignment = Enum.TextXAlignment.Left
-    Text.TextYAlignment = Enum.TextYAlignment.Center
+    -- NAME
+    local Name = Instance.new("TextLabel", Row)
+    Name.Position = UDim2.new(0,20,0,10)
+    Name.Size = UDim2.new(0.65,-20,0,26)
+    Name.Text = brainrot
+    Name.Font = Enum.Font.GothamBold
+    Name.TextSize = 15
+    Name.TextColor3 = Color3.fromRGB(235,235,245)
+    Name.BackgroundTransparency = 1
+    Name.TextXAlignment = Enum.TextXAlignment.Left
+    Name.TextWrapped = true
 
+    -- MONEY
+    local Money = Instance.new("TextLabel", Row)
+    Money.Position = UDim2.new(0,20,0,38)
+    Money.Size = UDim2.new(0.65,-20,0,20)
+    Money.Text = money .. (players ~= "" and ("  ("..players..")") or "")
+    Money.Font = Enum.Font.Gotham
+    Money.TextSize = 13
+    Money.TextColor3 = Color3.fromRGB(180,180,190)
+    Money.BackgroundTransparency = 1
+    Money.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- JOIN
     local Join = Instance.new("TextButton", Row)
-    Join.Size = UDim2.new(0,130,0,42)
-    Join.Position = UDim2.new(1,-150,0.5,-21)
+    Join.Size = UDim2.new(0,120,0,40)
+    Join.Position = UDim2.new(1,-140,0.5,-20)
     Join.Text = "JOIN"
     Join.Font = Enum.Font.GothamBold
-    Join.TextSize = 15
+    Join.TextSize = 14
     Join.TextColor3 = Color3.fromRGB(18,18,22)
     Join.BackgroundColor3 = Color3.fromRGB(45,200,125)
     Join.BorderSizePixel = 0
