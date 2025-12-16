@@ -1,187 +1,185 @@
 repeat task.wait() until game:IsLoaded()
 
---// Services
+-- SERVICES
 local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
 
---// CONFIG
-local RELAY_SERVERS_URL = "https://visible-self-furnishings-relatives.trycloudflare.com/servers"
-local REFRESH_INTERVAL = 5
+-- CONFIG
+local RELAY_URL = "https://visible-self-furnishings-relatives.trycloudflare.com/servers"
+local REFRESH_RATE = 8
 
---// Cleanup old GUI
+-- CLEANUP
 pcall(function()
-    local old = CoreGui:FindFirstChild("Krypth AJ")
-    if old then old:Destroy() end
+    CoreGui:FindFirstChild("KrypthAJ"):Destroy()
 end)
 
---// Helpers
-local function formatNumber(n)
-    n = tonumber(n) or 0
-    local s = tostring(math.floor(n))
-    return s:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+-- FONT
+local FONT = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Medium)
+
+-- GUI ROOT
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "KrypthAJ"
+Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+Gui.Parent = CoreGui
+
+-- MAIN FRAME
+local Main = Instance.new("Frame")
+Main.Size = UDim2.fromScale(0.42, 0.45)
+Main.Position = UDim2.fromScale(0.5, 0.5)
+Main.AnchorPoint = Vector2.new(0.5, 0.5)
+Main.BackgroundColor3 = Color3.fromRGB(15, 17, 22)
+Main.BorderSizePixel = 0
+Main.Parent = Gui
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 18)
+
+-- DRAG
+do
+    local dragging, dragStart, startPos
+    Main.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = i.Position
+            startPos = Main.Position
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(i)
+        if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = i.Position - dragStart
+            Main.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
+        end
+    end)
 end
 
---// GUI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "Krypth AJ"
-ScreenGui.IgnoreGuiInset = true
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = CoreGui
-
---// Rain Layer
-local RainLayer = Instance.new("Frame")
-RainLayer.Size = UDim2.fromScale(1,1)
-RainLayer.BackgroundTransparency = 1
-RainLayer.ZIndex = 1
-RainLayer.Parent = ScreenGui
-
--- Rain effect
-task.spawn(function()
-    while ScreenGui.Parent do
-        local drop = Instance.new("Frame")
-        drop.Size = UDim2.new(0,2,0,math.random(14,22))
-        drop.Position = UDim2.fromScale(math.random(), -0.1)
-        drop.BackgroundColor3 = Color3.fromRGB(120,120,140)
-        drop.BackgroundTransparency = 0.3
-        drop.BorderSizePixel = 0
-        drop.ZIndex = 2
-        drop.Parent = RainLayer
-
-        TweenService:Create(
-            drop,
-            TweenInfo.new(math.random(30,50)/60, Enum.EasingStyle.Linear),
-            {Position = UDim2.fromScale(drop.Position.X.Scale,1.1)}
-        ):Play()
-
-        task.delay(1, function()
-            if drop then drop:Destroy() end
-        end)
-
-        task.wait(0.04)
-    end
-end)
-
---// Main Frame
-local Main = Instance.new("Frame")
-Main.AnchorPoint = Vector2.new(0.5,0.5)
-Main.Position = UDim2.fromScale(0.5,0.5)
-Main.Size = UDim2.fromScale(0.42,0.6)
-Main.BackgroundColor3 = Color3.fromRGB(15,16,22)
-Main.BorderSizePixel = 0
-Main.ZIndex = 10
-Main.Parent = ScreenGui
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0,20)
-
---// Header
+-- HEADER
 local Header = Instance.new("TextLabel")
-Header.Size = UDim2.new(1,0,0,70)
-Header.Text = "🧠 Krypth AJ"
-Header.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Bold)
-Header.TextSize = 28
-Header.TextColor3 = Color3.fromRGB(240,240,255)
+Header.Size = UDim2.new(1, -30, 0, 48)
+Header.Position = UDim2.fromOffset(15, 10)
+Header.Text = "Krypth Auto Joiner"
+Header.FontFace = FONT
+Header.TextSize = 22
+Header.TextXAlignment = Left
+Header.TextColor3 = Color3.fromRGB(235,235,240)
 Header.BackgroundTransparency = 1
-Header.ZIndex = 11
 Header.Parent = Main
 
---// Scroll
+-- SCROLL
 local Scroll = Instance.new("ScrollingFrame")
-Scroll.Position = UDim2.new(0,20,0,90)
-Scroll.Size = UDim2.new(1,-40,1,-120)
+Scroll.Position = UDim2.fromOffset(15, 65)
+Scroll.Size = UDim2.new(1, -30, 1, -80)
 Scroll.CanvasSize = UDim2.new()
-Scroll.ScrollBarThickness = 6
+Scroll.ScrollBarThickness = 4
 Scroll.BackgroundTransparency = 1
-Scroll.ZIndex = 11
 Scroll.Parent = Main
 
 local Layout = Instance.new("UIListLayout")
-Layout.Padding = UDim.new(0,14)
+Layout.Padding = UDim.new(0, 10)
 Layout.Parent = Scroll
 
 Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    Scroll.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 20)
+    Scroll.CanvasSize = UDim2.fromOffset(0, Layout.AbsoluteContentSize.Y + 20)
 end)
 
---// Row creator
-local function createRow(brainrot, money, jobId)
-    local Row = Instance.new("Frame")
-    Row.Size = UDim2.new(1,0,0,72)
-    Row.BackgroundColor3 = Color3.fromRGB(22,23,30)
-    Row.BorderSizePixel = 0
-    Row.ZIndex = 12
-    Row.Parent = Scroll
-    Instance.new("UICorner", Row).CornerRadius = UDim.new(0,14)
+-- RAIN
+local RainFolder = Instance.new("Folder", Gui)
+RunService.RenderStepped:Connect(function()
+    if math.random() < 0.3 then
+        local drop = Instance.new("Frame")
+        drop.Size = UDim2.fromOffset(1, math.random(10,20))
+        drop.Position = UDim2.fromScale(math.random(), -0.1)
+        drop.BackgroundColor3 = Color3.fromRGB(120,120,140)
+        drop.BackgroundTransparency = 0.7
+        drop.Parent = RainFolder
 
-    local Text = Instance.new("TextLabel")
-    Text.Position = UDim2.new(0,18,0,0)
-    Text.Size = UDim2.new(0.65,-18,1,0)
-    Text.Text = brainrot .. " — " .. money
-    Text.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
-    Text.TextSize = 15
-    Text.TextColor3 = Color3.fromRGB(220,220,235)
-    Text.TextXAlignment = Enum.TextXAlignment.Left
-    Text.BackgroundTransparency = 1
-    Text.ZIndex = 13
-    Text.Parent = Row
+        TweenService:Create(drop, TweenInfo.new(1.2), {
+            Position = UDim2.fromScale(drop.Position.X.Scale, 1.2),
+            BackgroundTransparency = 1
+        }):Play()
+
+        task.delay(1.2, function() drop:Destroy() end)
+    end
+end)
+
+-- ROW CREATOR
+local function createRow(brainrot, money, jobId, placeId)
+    local Row = Instance.new("Frame")
+    Row.Size = UDim2.new(1, 0, 0, 64)
+    Row.BackgroundColor3 = Color3.fromRGB(22, 25, 32)
+    Row.BorderSizePixel = 0
+    Row.Parent = Scroll
+    Instance.new("UICorner", Row).CornerRadius = UDim.new(0, 14)
+
+    local Name = Instance.new("TextLabel")
+    Name.Position = UDim2.fromOffset(16, 8)
+    Name.Size = UDim2.new(0.6, 0, 0, 22)
+    Name.Text = brainrot
+    Name.FontFace = FONT
+    Name.TextSize = 16
+    Name.TextXAlignment = Left
+    Name.TextColor3 = Color3.fromRGB(230,230,235)
+    Name.BackgroundTransparency = 1
+    Name.Parent = Row
+
+    local Money = Instance.new("TextLabel")
+    Money.Position = UDim2.fromOffset(16, 32)
+    Money.Size = UDim2.new(0.6, 0, 0, 18)
+    Money.Text = money
+    Money.FontFace = FONT
+    Money.TextSize = 14
+    Money.TextXAlignment = Left
+    Money.TextColor3 = Color3.fromRGB(150,200,255)
+    Money.BackgroundTransparency = 1
+    Money.Parent = Row
 
     local Join = Instance.new("TextButton")
-    Join.Size = UDim2.new(0,120,0,40)
-    Join.Position = UDim2.new(1,-140,0.5,-20)
+    Join.Size = UDim2.fromOffset(110, 36)
+    Join.Position = UDim2.new(1, -126, 0.5, -18)
     Join.Text = "JOIN"
-    Join.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Bold)
+    Join.FontFace = FONT
     Join.TextSize = 14
     Join.TextColor3 = Color3.fromRGB(20,20,25)
-    Join.BackgroundColor3 = Color3.fromRGB(80,220,140)
+    Join.BackgroundColor3 = Color3.fromRGB(90,200,140)
     Join.BorderSizePixel = 0
-    Join.ZIndex = 13
     Join.Parent = Row
-    Instance.new("UICorner", Join).CornerRadius = UDim.new(0,12)
+    Instance.new("UICorner", Join).CornerRadius = UDim.new(0, 12)
 
     Join.MouseButton1Click:Connect(function()
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
+        TeleportService:TeleportToPlaceInstance(placeId, jobId, LocalPlayer)
     end)
-
-    Row.BackgroundTransparency = 1
-    TweenService:Create(Row, TweenInfo.new(0.35, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
 end
 
---// Clear rows
-local function clearRows()
-    for _,v in ipairs(Scroll:GetChildren()) do
-        if v:IsA("Frame") then
-            v:Destroy()
-        end
-    end
-end
-
---// Refresh
+-- REFRESH
 local function refresh()
-    local ok, res = pcall(function()
-        return game:HttpGet(RELAY_SERVERS_URL)
-    end)
-    if not ok then return end
+    for _,v in ipairs(Scroll:GetChildren()) do
+        if v:IsA("Frame") then v:Destroy() end
+    end
 
-    local data = HttpService:JSONDecode(res)
-    if type(data) ~= "table" then return end
-
-    clearRows()
+    local raw = game:HttpGet(RELAY_URL)
+    local data = HttpService:JSONDecode(raw)
 
     for _,entry in ipairs(data) do
-        if entry.brainrot and entry.money and entry.jobId then
-            createRow(entry.brainrot, entry.money, entry.jobId)
+        if entry.brainrot and entry.money then
+            createRow(entry.brainrot, entry.money, entry.jobId, entry.placeId)
         end
     end
 end
 
---// Auto refresh loop
+-- LOOP
 task.spawn(function()
     while true do
-        refresh()
-        task.wait(REFRESH_INTERVAL)
+        pcall(refresh)
+        task.wait(REFRESH_RATE)
     end
 end)
