@@ -1,181 +1,255 @@
---// Krypth AJ – FULL FIXED GUI SCRIPT (NO ERRORS)
+--// KRYPTH AJ — SERIOUS / CLEAN / MODERN GUI
+--// Full LocalScript – draggable, tabs, animations, clean layout
+--// NO EMOJIS • NO DEBUG • NO TALK • JUST SCRIPT
 
 repeat task.wait() until game:IsLoaded()
 
 -- SERVICES
 local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
-local TeleportService = game:GetService("TeleportService")
 local UserInputService = game:GetService("UserInputService")
-local CoreGui = game:GetService("CoreGui")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 
-local LocalPlayer = Players.LocalPlayer
+local player = Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
 
 -- CONFIG
-local RELAY_URL = "https://visible-self-furnishings-relatives.trycloudflare.com/servers"
+local RELAY_URL = "https://YOUR-TRYCLOUDFLARE-URL.trycloudflare.com/servers"
 local REFRESH_INTERVAL = 5
-local SESSION_START = os.time() * 1000
-local FONT = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
 
--- CLEAN OLD GUI
+-- CLEAN
 pcall(function()
-    local old = CoreGui:FindFirstChild("KrypthAJ")
-    if old then old:Destroy() end
+	if PlayerGui:FindFirstChild("KrypthAJ") then
+		PlayerGui.KrypthAJ:Destroy()
+	end
 end)
 
--- GUI ROOT
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "KrypthAJ"
-ScreenGui.IgnoreGuiInset = true
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = CoreGui
+-- UTILS
+local function tween(o,p,t)
+	TweenService:Create(o,TweenInfo.new(t or 0.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),p):Play()
+end
 
--- MAIN FRAME
-local Main = Instance.new("Frame")
-Main.Size = UDim2.fromScale(0.45, 0.55)
-Main.Position = UDim2.fromScale(0.5, 0.5)
-Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
-Main.BorderSizePixel = 0
-Main.Parent = ScreenGui
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 22)
+-- GUI ROOT
+local gui = Instance.new("ScreenGui")
+gui.Name = "KrypthAJ"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = PlayerGui
+
+-- MAIN PANEL
+local main = Instance.new("Frame")
+main.Size = UDim2.fromScale(0.48,0.6)
+main.Position = UDim2.fromScale(0.26,0.2)
+main.BackgroundColor3 = Color3.fromRGB(18,19,23)
+main.BorderSizePixel = 0
+main.Active = true
+main.Parent = gui
+Instance.new("UICorner",main).CornerRadius = UDim.new(0,26)
+
+-- SHADOW
+local shadow = Instance.new("ImageLabel")
+shadow.Image = "rbxassetid://1316045217"
+shadow.ImageTransparency = 0.6
+shadow.ScaleType = Enum.ScaleType.Slice
+shadow.SliceCenter = Rect.new(10,10,118,118)
+shadow.Size = UDim2.fromScale(1.06,1.1)
+shadow.Position = UDim2.fromScale(-0.03,-0.05)
+shadow.BackgroundTransparency = 1
+shadow.Parent = main
+
+-- HEADER
+local header = Instance.new("Frame")
+header.Size = UDim2.new(1,0,0,80)
+header.BackgroundTransparency = 1
+header.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Text = "KRYPT AJ"
+title.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.SemiBold)
+title.TextSize = 28
+title.TextColor3 = Color3.fromRGB(240,240,245)
+title.BackgroundTransparency = 1
+title.Position = UDim2.fromOffset(28,26)
+title.Size = UDim2.fromOffset(300,30)
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = header
+
+-- TAB BAR
+local tabs = Instance.new("Frame")
+tabs.Size = UDim2.new(1,-48,0,54)
+tabs.Position = UDim2.fromOffset(24,96)
+tabs.BackgroundTransparency = 1
+tabs.Parent = main
+
+local tabsLayout = Instance.new("UIListLayout")
+tabsLayout.FillDirection = Enum.FillDirection.Horizontal
+tabsLayout.Padding = UDim.new(0,12)
+tabsLayout.Parent = tabs
+
+local function newTab(text)
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.fromOffset(160,48)
+	b.BackgroundColor3 = Color3.fromRGB(26,28,34)
+	b.BorderSizePixel = 0
+	b.Text = text
+	b.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Medium)
+	b.TextSize = 15
+	b.TextColor3 = Color3.fromRGB(180,185,195)
+	Instance.new("UICorner",b).CornerRadius = UDim.new(0,16)
+	return b
+end
+
+local tab1 = newTab("1M – 10M")
+local tab2 = newTab("10M – 100M")
+local tab3 = newTab("100M – INF")
+
+tab1.Parent = tabs
+tab2.Parent = tabs
+tab3.Parent = tabs
+
+-- LIST
+local list = Instance.new("ScrollingFrame")
+list.Position = UDim2.fromOffset(24,160)
+list.Size = UDim2.new(1,-48,1,-180)
+list.CanvasSize = UDim2.new(0,0,0,0)
+list.ScrollBarImageTransparency = 0.5
+list.BackgroundTransparency = 1
+list.BorderSizePixel = 0
+list.Parent = main
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0,14)
+layout.Parent = list
+
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	list.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y + 20)
+end)
+
+-- CARD
+local function card(data)
+	local f = Instance.new("Frame")
+	f.Size = UDim2.new(1,0,0,90)
+	f.BackgroundColor3 = Color3.fromRGB(24,26,32)
+	f.BorderSizePixel = 0
+	f.Parent = list
+	Instance.new("UICorner",f).CornerRadius = UDim.new(0,18)
+
+	local name = Instance.new("TextLabel")
+	name.Text = data.brainrot or "Unknown"
+	name.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Medium)
+	name.TextSize = 17
+	name.TextColor3 = Color3.fromRGB(235,235,240)
+	name.BackgroundTransparency = 1
+	name.Position = UDim2.fromOffset(22,18)
+	name.Size = UDim2.new(1,-200,0,24)
+	name.TextXAlignment = Enum.TextXAlignment.Left
+	name.Parent = f
+
+	local money = Instance.new("TextLabel")
+	money.Text = data.money or ""
+	money.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
+	money.TextSize = 14
+	money.TextColor3 = Color3.fromRGB(160,170,185)
+	money.BackgroundTransparency = 1
+	money.Position = UDim2.fromOffset(22,46)
+	money.Size = UDim2.new(1,-200,0,20)
+	money.TextXAlignment = Enum.TextXAlignment.Left
+	money.Parent = f
+
+	local join = Instance.new("TextButton")
+	join.Text = "JOIN"
+	join.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.SemiBold)
+	join.TextSize = 15
+	join.TextColor3 = Color3.fromRGB(20,20,24)
+	join.BackgroundColor3 = Color3.fromRGB(85,200,135)
+	join.Size = UDim2.fromOffset(110,42)
+	join.Position = UDim2.new(1,-132,0.5,-21)
+	join.BorderSizePixel = 0
+	join.Parent = f
+	Instance.new("UICorner",join).CornerRadius = UDim.new(0,14)
+
+	join.MouseButton1Click:Connect(function()
+		TeleportService:TeleportToPlaceInstance(data.placeId,data.jobId,player)
+	end)
+
+	f.BackgroundTransparency = 1
+	tween(f,{BackgroundTransparency=0},0.25)
+end
+
+-- FILTER
+local range = {min=1e6,max=1e7}
+
+local function activate(tab)
+	for _,b in ipairs({tab1,tab2,tab3}) do
+		b.BackgroundColor3 = Color3.fromRGB(26,28,34)
+		b.TextColor3 = Color3.fromRGB(180,185,195)
+	end
+	tab.BackgroundColor3 = Color3.fromRGB(34,38,46)
+	tab.TextColor3 = Color3.fromRGB(240,240,245)
+end
+
+tab1.MouseButton1Click:Connect(function()
+	range={min=1e6,max=1e7}
+	activate(tab1)
+end)
+tab2.MouseButton1Click:Connect(function()
+	range={min=1e7,max=1e8}
+	activate(tab2)
+end)
+tab3.MouseButton1Click:Connect(function()
+	range={min=1e8,max=math.huge}
+	activate(tab3)
+end)
+
+activate(tab1)
+
+-- DATA
+local function refresh()
+	list:ClearAllChildren()
+	layout.Parent = list
+
+	local ok,res = pcall(function()
+		return HttpService:GetAsync(RELAY_URL)
+	end)
+	if not ok then return end
+
+	local data = HttpService:JSONDecode(res)
+	for _,v in ipairs(data) do
+		local mps = tonumber(v.mps) or 0
+		if mps>=range.min and mps<range.max then
+			card(v)
+		end
+	end
+end
+
+task.spawn(function()
+	while task.wait(REFRESH_INTERVAL) do
+		refresh()
+	end
+end)
+
+refresh()
 
 -- DRAG
 do
-    local dragging, dragStart, startPos
-    Main.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = i.Position
-            startPos = Main.Position
-        end
-    end)
-    UserInputService.InputEnded:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-    UserInputService.InputChanged:Connect(function(i)
-        if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = i.Position - dragStart
-            Main.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
+	local dragging,start,startPos
+	main.InputBegan:Connect(function(i)
+		if i.UserInputType==Enum.UserInputType.MouseButton1 then
+			dragging=true
+			start=i.Position
+			startPos=main.Position
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(i)
+		if dragging and i.UserInputType==Enum.UserInputType.MouseMovement then
+			local d=i.Position-start
+			main.Position=startPos+UDim2.fromOffset(d.X,d.Y)
+		end
+	end)
+	UserInputService.InputEnded:Connect(function(i)
+		if i.UserInputType==Enum.UserInputType.MouseButton1 then
+			dragging=false
+		end
+	end)
 end
-
--- HEADER
-local Header = Instance.new("TextLabel")
-Header.Size = UDim2.new(1, -30, 0, 60)
-Header.Position = UDim2.new(0, 15, 0, 0)
-Header.BackgroundTransparency = 1
-Header.Text = "Krypth AJ"
-Header.FontFace = FONT
-Header.TextSize = 26
-Header.TextColor3 = Color3.fromRGB(235,235,245)
-Header.TextXAlignment = Enum.TextXAlignment.Left
-Header.TextYAlignment = Enum.TextYAlignment.Center
-Header.Parent = Main
-
--- SCROLL
-local Scroll = Instance.new("ScrollingFrame")
-Scroll.Position = UDim2.new(0, 15, 0, 70)
-Scroll.Size = UDim2.new(1, -30, 1, -85)
-Scroll.CanvasSize = UDim2.new()
-Scroll.ScrollBarImageTransparency = 0.2
-Scroll.ScrollBarThickness = 5
-Scroll.BackgroundTransparency = 1
-Scroll.BorderSizePixel = 0
-Scroll.Parent = Main
-
-local Layout = Instance.new("UIListLayout")
-Layout.Padding = UDim.new(0, 12)
-Layout.Parent = Scroll
-
-Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
-end)
-
--- HELPERS
-local function clearRows()
-    for _,v in ipairs(Scroll:GetChildren()) do
-        if v:IsA("Frame") then v:Destroy() end
-    end
-end
-
-local function createRow(name, money, placeId, jobId)
-    local Row = Instance.new("Frame")
-    Row.Size = UDim2.new(1, 0, 0, 64)
-    Row.BackgroundColor3 = Color3.fromRGB(26,26,34)
-    Row.BorderSizePixel = 0
-    Row.Parent = Scroll
-    Instance.new("UICorner", Row).CornerRadius = UDim.new(0, 16)
-
-    local Name = Instance.new("TextLabel")
-    Name.Position = UDim2.new(0, 18, 0, 6)
-    Name.Size = UDim2.new(0.6, 0, 0, 24)
-    Name.BackgroundTransparency = 1
-    Name.Text = name
-    Name.FontFace = FONT
-    Name.TextSize = 16
-    Name.TextColor3 = Color3.fromRGB(235,235,245)
-    Name.TextXAlignment = Enum.TextXAlignment.Left
-    Name.TextYAlignment = Enum.TextYAlignment.Center
-    Name.Parent = Row
-
-    local Money = Instance.new("TextLabel")
-    Money.Position = UDim2.new(0, 18, 0, 34)
-    Money.Size = UDim2.new(0.6, 0, 0, 20)
-    Money.BackgroundTransparency = 1
-    Money.Text = money
-    Money.FontFace = FONT
-    Money.TextSize = 14
-    Money.TextColor3 = Color3.fromRGB(160,220,180)
-    Money.TextXAlignment = Enum.TextXAlignment.Left
-    Money.TextYAlignment = Enum.TextYAlignment.Center
-    Money.Parent = Row
-
-    local Join = Instance.new("TextButton")
-    Join.Size = UDim2.new(0, 120, 0, 38)
-    Join.Position = UDim2.new(1, -138, 0.5, -19)
-    Join.BackgroundColor3 = Color3.fromRGB(60,200,130)
-    Join.Text = "JOIN"
-    Join.FontFace = FONT
-    Join.TextSize = 15
-    Join.TextColor3 = Color3.fromRGB(15,15,20)
-    Join.BorderSizePixel = 0
-    Join.Parent = Row
-    Instance.new("UICorner", Join).CornerRadius = UDim.new(0, 12)
-
-    Join.MouseButton1Click:Connect(function()
-        TeleportService:TeleportToPlaceInstance(placeId, jobId, LocalPlayer)
-    end)
-end
-
--- FETCH + REFRESH
-task.spawn(function()
-    while true do
-        clearRows()
-        local ok, res = pcall(function()
-            return HttpService:JSONDecode(game:HttpGet(RELAY_URL))
-        end)
-        if ok and type(res) == "table" then
-            for _,v in ipairs(res) do
-                if v.time and v.time >= SESSION_START then
-                    createRow(
-                        tostring(v.brainrot or "Unknown"),
-                        tostring(v.money or "$0/s"),
-                        tonumber(v.placeId),
-                        tostring(v.jobId)
-                    )
-                end
-            end
-        end
-        task.wait(REFRESH_INTERVAL)
-    end
-end)
