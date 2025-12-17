@@ -15,7 +15,7 @@ local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
 
 -- CONFIG
-local RELAY_URL = "https://YOUR-TRYCLOUDFLARE-URL.trycloudflare.com/servers"
+local RELAY_URL = "https://talks-prize-strings-system.trycloudflare.com/servers"
 local REFRESH_INTERVAL = 5
 
 -- CLEAN
