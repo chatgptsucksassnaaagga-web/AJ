@@ -1,166 +1,174 @@
 repeat task.wait() until game:IsLoaded()
 
+-- ========================
 -- SERVICES
+-- ========================
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
+local UIS = game:GetService("UserInputService")
 
-local Player = Players.LocalPlayer
-
--- CONFIG
-local RELAY_URL = "https://subcommittee-resort-victor-retail.trycloudflare.com/servers"
-
--- FONT
+local PLAYER = Players.LocalPlayer
+local RELAY_URL = "https://introducing-annual-sys-oops.trycloudflare.com"
 local FONT = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
 
--- CLEANUP
+-- ========================
+-- CLEAN OLD GUI
+-- ========================
 pcall(function()
 	if CoreGui:FindFirstChild("KrypthAJ") then
 		CoreGui.KrypthAJ:Destroy()
 	end
 end)
 
--- =========================
--- GUI ROOT
--- =========================
+-- ========================
+-- GUI
+-- ========================
 local Gui = Instance.new("ScreenGui")
 Gui.Name = "KrypthAJ"
 Gui.ResetOnSpawn = false
 Gui.Parent = CoreGui
 
--- =========================
--- MAIN BAR (TOP CENTER)
--- =========================
-local Bar = Instance.new("Frame")
+local Bar = Instance.new("Frame", Gui)
 Bar.Size = UDim2.fromOffset(420, 48)
 Bar.Position = UDim2.fromScale(0.5, 0.06)
 Bar.AnchorPoint = Vector2.new(0.5, 0)
-Bar.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+Bar.BackgroundColor3 = Color3.fromRGB(18,18,24)
 Bar.BorderSizePixel = 0
-Bar.Parent = Gui
-Instance.new("UICorner", Bar).CornerRadius = UDim.new(0, 14)
+Instance.new("UICorner", Bar).CornerRadius = UDim.new(0,14)
 
--- DRAG
+-- ========================
+-- DRAG (FIXED)
+-- ========================
 do
-	local dragging, dragStart, startPos
+	local dragging = false
+	local startMouse, startPos
+
 	Bar.InputBegan:Connect(function(i)
 		if i.UserInputType == Enum.UserInputType.MouseButton1 then
 			dragging = true
-			dragStart = i.Position
+			startMouse = i.Position
 			startPos = Bar.Position
 		end
 	end)
-	Bar.InputEnded:Connect(function(i)
+
+	UIS.InputChanged:Connect(function(i)
+		if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+			local delta = i.Position - startMouse
+			Bar.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
+		end
+	end)
+
+	UIS.InputEnded:Connect(function(i)
 		if i.UserInputType == Enum.UserInputType.MouseButton1 then
 			dragging = false
 		end
 	end)
-	game:GetService("UserInputService").InputChanged:Connect(function(i)
-		if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
-			local delta = i.Position - dragStart
-			Bar.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
-		end
-	end)
 end
 
--- =========================
--- BUTTONS
--- =========================
-local function makeButton(text, x)
-	local b = Instance.new("TextButton")
-	b.Size = UDim2.fromOffset(160, 32)
-	b.Position = UDim2.fromOffset(x, 8)
+-- ========================
+-- BUTTON HELPER
+-- ========================
+local function button(text, x)
+	local b = Instance.new("TextButton", Bar)
+	b.Size = UDim2.fromOffset(160,32)
+	b.Position = UDim2.fromOffset(x,8)
 	b.Text = text
 	b.FontFace = FONT
 	b.TextSize = 15
 	b.TextColor3 = Color3.fromRGB(235,235,245)
 	b.BackgroundColor3 = Color3.fromRGB(32,32,40)
 	b.BorderSizePixel = 0
-	b.Parent = Bar
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,10)
 	return b
 end
 
-local AJButton = makeButton("Krypth AJ", 16)
-local SettingsButton = makeButton("Settings", 244)
+local JoinBtn = button("Krypth AJ", 16)
+local SettingsBtn = button("Settings", 244)
 
--- =========================
--- SETTINGS PANEL
--- =========================
-local Settings = Instance.new("Frame")
-Settings.Size = UDim2.fromOffset(420, 140)
-Settings.Position = UDim2.fromScale(0.5, 0.06)
-Settings.AnchorPoint = Vector2.new(0.5, 0)
+-- ========================
+-- SETTINGS PANEL (FIXED)
+-- ========================
+local Settings = Instance.new("Frame", Gui)
+Settings.Size = UDim2.fromOffset(420,140)
+Settings.AnchorPoint = Vector2.new(0.5,0)
+Settings.Visible = false
 Settings.BackgroundColor3 = Color3.fromRGB(22,22,28)
 Settings.BorderSizePixel = 0
-Settings.Visible = false
-Settings.Parent = Gui
-Instance.new("UICorner", Settings).CornerRadius = UDim.new(0, 14)
+Instance.new("UICorner", Settings).CornerRadius = UDim.new(0,14)
 
+-- follow bar
+local function updateSettingsPos()
+	Settings.Position = Bar.Position + UDim2.new(0,0,0,56)
+end
+updateSettingsPos()
+Bar:GetPropertyChangedSignal("Position"):Connect(updateSettingsPos)
+
+-- ========================
 -- INPUT
-local Input = Instance.new("TextBox")
-Input.Size = UDim2.fromOffset(200, 36)
-Input.Position = UDim2.fromOffset(20, 60)
-Input.PlaceholderText = "Enter money (e.g. 49000000)"
-Input.Text = ""
+-- ========================
+local Input = Instance.new("TextBox", Settings)
+Input.Size = UDim2.fromOffset(200,36)
+Input.Position = UDim2.fromOffset(20,60)
+Input.PlaceholderText = "Enter minimum MPS (e.g. 49000000)"
 Input.FontFace = FONT
 Input.TextSize = 14
-Input.TextColor3 = Color3.fromRGB(230,230,240)
+Input.TextColor3 = Color3.fromRGB(235,235,245)
 Input.BackgroundColor3 = Color3.fromRGB(32,32,40)
 Input.BorderSizePixel = 0
-Input.Parent = Settings
-Instance.new("UICorner", Input).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", Input).CornerRadius = UDim.new(0,10)
 
--- DISPLAY (49)
-local Display = Instance.new("TextLabel")
-Display.Size = UDim2.fromOffset(120, 36)
-Display.Position = UDim2.fromOffset(260, 60)
-Display.Text = "0"
+local Display = Instance.new("TextLabel", Settings)
+Display.Size = UDim2.fromOffset(160,36)
+Display.Position = UDim2.fromOffset(240,60)
 Display.FontFace = FONT
 Display.TextSize = 18
 Display.TextColor3 = Color3.fromRGB(120,200,255)
 Display.BackgroundTransparency = 1
-Display.Parent = Settings
+Display.Text = "0 M"
 
-local MinMPS = 0
+local MIN_MPS = 0
 
 Input:GetPropertyChangedSignal("Text"):Connect(function()
 	local n = tonumber(Input.Text)
 	if n then
-		MinMPS = n
-		Display.Text = tostring(math.floor(n / 1_000_000))
+		MIN_MPS = n
+		Display.Text = string.format("%d M", math.floor(n / 1_000_000))
 	end
 end)
 
--- TOGGLE SETTINGS
-SettingsButton.MouseButton1Click:Connect(function()
+SettingsBtn.MouseButton1Click:Connect(function()
 	Settings.Visible = not Settings.Visible
 end)
 
--- =========================
--- FETCH + JOIN LOGIC
--- =========================
-local function getBestServer()
-	local ok, body = pcall(function()
+-- ========================
+-- SERVER PICKER (SAFE)
+-- ========================
+local function getBest()
+	local ok, raw = pcall(function()
 		return HttpService:GetAsync(RELAY_URL)
 	end)
-	if not ok then return nil end
+	if not ok then return end
 
-	local data = HttpService:JSONDecode(body)
+	local data
+	ok, data = pcall(function()
+		return HttpService:JSONDecode(raw)
+	end)
+	if not ok or type(data) ~= "table" then return end
+
 	local best
-
 	for _,s in ipairs(data) do
-		local mps = tonumber(
-			(type(s.money) == "string" and s.money:gsub("[^%d]", "")) or s.mps
-		) or 0
+		local mps =
+			tonumber(s.mps)
+			or tonumber((s.money or ""):gsub("%D",""))
+			or 0
 
-		if mps >= MinMPS then
+		if mps >= MIN_MPS then
 			if not best or mps > best.mps then
 				best = {
-					jobId = s.jobId,
 					placeId = s.placeId,
+					jobId = s.jobId,
 					mps = mps
 				}
 			end
@@ -170,9 +178,13 @@ local function getBestServer()
 	return best
 end
 
-AJButton.MouseButton1Click:Connect(function()
-	local best = getBestServer()
+JoinBtn.MouseButton1Click:Connect(function()
+	local best = getBest()
 	if best then
-		TeleportService:TeleportToPlaceInstance(best.placeId, best.jobId, Player)
+		TeleportService:TeleportToPlaceInstance(
+			best.placeId,
+			best.jobId,
+			PLAYER
+		)
 	end
 end)
