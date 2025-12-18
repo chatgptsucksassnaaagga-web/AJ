@@ -10,7 +10,7 @@ local CoreGui = game:GetService("CoreGui")
 local UIS = game:GetService("UserInputService")
 
 local PLAYER = Players.LocalPlayer
-local RELAY_URL = "https://introducing-annual-sys-oops.trycloudflare.com"
+local RELAY_URL = "https://introducing-annual-sys-oops.trycloudflare.com/servers"
 local FONT = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
 
 -- ========================
