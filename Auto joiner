@@ -1,51 +1,61 @@
---// KRYPTH AJ — SERIOUS / CLEAN / MODERN GUI
---// Full LocalScript – draggable, tabs, animations, clean layout
---// NO EMOJIS • NO DEBUG • NO TALK • JUST SCRIPT
+--// KRYPT AJ — AUTO JOIN BUTTON + SETTINGS
+--// FULL LOCAL SCRIPT
+--// 2 SMALL TOP BUTTONS
+--// TITILLIUM WEB FONT
+--// AUTO JOINS BEST SERVER FOUND
+--// NO GUI BLOAT
 
 repeat task.wait() until game:IsLoaded()
 
 -- SERVICES
 local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
 
 -- CONFIG
-local RELAY_URL = "https://talks-prize-strings-system.trycloudflare.com/servers"
-local REFRESH_INTERVAL = 5
+local RELAY_URL = "  https://subcommittee-resort-victor-retail.trycloudflare.com"
+local PLACE_ID = game.PlaceId
 
--- CLEAN
+-- SETTINGS STATE
+local FILTER_MODE = "OVER_1M"
+-- MODES: UNDER_1M, OVER_1M, OVER_10M, OVER_49M, OVER_100M
+
+local FILTERS = {
+	UNDER_1M = {min = 0, max = 1e6},
+	OVER_1M = {min = 1e6, max = math.huge},
+	OVER_10M = {min = 1e7, max = math.huge},
+	OVER_49M = {min = 4.9e7, max = math.huge},
+	OVER_100M = {min = 1e8, max = math.huge},
+}
+
+-- CLEAN OLD
 pcall(function()
-	if PlayerGui:FindFirstChild("KrypthAJ") then
-		PlayerGui.KrypthAJ:Destroy()
+	if PlayerGui:FindFirstChild("KryptAJMini") then
+		PlayerGui.KryptAJMini:Destroy()
 	end
 end)
 
--- UTILS
-local function tween(o,p,t)
-	TweenService:Create(o,TweenInfo.new(t or 0.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),p):Play()
-end
-
 -- GUI ROOT
 local gui = Instance.new("ScreenGui")
-gui.Name = "KrypthAJ"
+gui.Name = "KryptAJMini"
 gui.IgnoreGuiInset = true
 gui.ResetOnSpawn = false
 gui.Parent = PlayerGui
 
--- MAIN PANEL
-local main = Instance.new("Frame")
-main.Size = UDim2.fromScale(0.48,0.6)
-main.Position = UDim2.fromScale(0.26,0.2)
-main.BackgroundColor3 = Color3.fromRGB(18,19,23)
-main.BorderSizePixel = 0
-main.Active = true
-main.Parent = gui
-Instance.new("UICorner",main).CornerRadius = UDim.new(0,26)
+-- CONTAINER
+local bar = Instance.new("Frame")
+bar.Size = UDim2.fromOffset(360,48)
+bar.Position = UDim2.fromOffset(20,20)
+bar.BackgroundColor3 = Color3.fromRGB(18,19,23)
+bar.BorderSizePixel = 0
+bar.Parent = gui
+bar.Active = true
+Instance.new("UICorner",bar).CornerRadius = UDim.new(0,16)
 
 -- SHADOW
 local shadow = Instance.new("ImageLabel")
@@ -53,203 +63,162 @@ shadow.Image = "rbxassetid://1316045217"
 shadow.ImageTransparency = 0.6
 shadow.ScaleType = Enum.ScaleType.Slice
 shadow.SliceCenter = Rect.new(10,10,118,118)
-shadow.Size = UDim2.fromScale(1.06,1.1)
-shadow.Position = UDim2.fromScale(-0.03,-0.05)
+shadow.Size = UDim2.fromScale(1.08,1.4)
+shadow.Position = UDim2.fromScale(-0.04,-0.2)
 shadow.BackgroundTransparency = 1
-shadow.Parent = main
+shadow.Parent = bar
 
--- HEADER
-local header = Instance.new("Frame")
-header.Size = UDim2.new(1,0,0,80)
-header.BackgroundTransparency = 1
-header.Parent = main
-
-local title = Instance.new("TextLabel")
-title.Text = "KRYPT AJ"
-title.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.SemiBold)
-title.TextSize = 28
-title.TextColor3 = Color3.fromRGB(240,240,245)
-title.BackgroundTransparency = 1
-title.Position = UDim2.fromOffset(28,26)
-title.Size = UDim2.fromOffset(300,30)
-title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = header
-
--- TAB BAR
-local tabs = Instance.new("Frame")
-tabs.Size = UDim2.new(1,-48,0,54)
-tabs.Position = UDim2.fromOffset(24,96)
-tabs.BackgroundTransparency = 1
-tabs.Parent = main
-
-local tabsLayout = Instance.new("UIListLayout")
-tabsLayout.FillDirection = Enum.FillDirection.Horizontal
-tabsLayout.Padding = UDim.new(0,12)
-tabsLayout.Parent = tabs
-
-local function newTab(text)
+-- BUTTON TEMPLATE
+local function makeButton(text,w)
 	local b = Instance.new("TextButton")
-	b.Size = UDim2.fromOffset(160,48)
+	b.Size = UDim2.fromOffset(w,34)
 	b.BackgroundColor3 = Color3.fromRGB(26,28,34)
 	b.BorderSizePixel = 0
 	b.Text = text
-	b.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Medium)
-	b.TextSize = 15
-	b.TextColor3 = Color3.fromRGB(180,185,195)
-	Instance.new("UICorner",b).CornerRadius = UDim.new(0,16)
+	b.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.SemiBold)
+	b.TextSize = 14
+	b.TextColor3 = Color3.fromRGB(235,235,240)
+	Instance.new("UICorner",b).CornerRadius = UDim.new(0,12)
 	return b
 end
 
-local tab1 = newTab("1M – 10M")
-local tab2 = newTab("10M – 100M")
-local tab3 = newTab("100M – INF")
+-- KRYPT AJ BUTTON
+local ajBtn = makeButton("KRYPT AJ",180)
+ajBtn.Position = UDim2.fromOffset(12,7)
+ajBtn.Parent = bar
 
-tab1.Parent = tabs
-tab2.Parent = tabs
-tab3.Parent = tabs
+-- SETTINGS BUTTON
+local settingsBtn = makeButton("SETTINGS",140)
+settingsBtn.Position = UDim2.fromOffset(208,7)
+settingsBtn.Parent = bar
 
--- LIST
-local list = Instance.new("ScrollingFrame")
-list.Position = UDim2.fromOffset(24,160)
-list.Size = UDim2.new(1,-48,1,-180)
-list.CanvasSize = UDim2.new(0,0,0,0)
-list.ScrollBarImageTransparency = 0.5
-list.BackgroundTransparency = 1
-list.BorderSizePixel = 0
-list.Parent = main
+-- SETTINGS PANEL
+local panel = Instance.new("Frame")
+panel.Size = UDim2.fromOffset(220,210)
+panel.Position = UDim2.fromOffset(20,76)
+panel.BackgroundColor3 = Color3.fromRGB(20,22,28)
+panel.BorderSizePixel = 0
+panel.Visible = false
+panel.Parent = gui
+Instance.new("UICorner",panel).CornerRadius = UDim.new(0,16)
 
 local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0,14)
-layout.Parent = list
+layout.Padding = UDim.new(0,10)
+layout.Parent = panel
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-	list.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y + 20)
+	panel.Size = UDim2.fromOffset(220,layout.AbsoluteContentSize.Y + 20)
 end)
 
--- CARD
-local function card(data)
-	local f = Instance.new("Frame")
-	f.Size = UDim2.new(1,0,0,90)
-	f.BackgroundColor3 = Color3.fromRGB(24,26,32)
-	f.BorderSizePixel = 0
-	f.Parent = list
-	Instance.new("UICorner",f).CornerRadius = UDim.new(0,18)
+local function makeOption(text,mode)
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.fromOffset(190,32)
+	b.BackgroundColor3 = Color3.fromRGB(30,33,40)
+	b.BorderSizePixel = 0
+	b.Text = text
+	b.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
+	b.TextSize = 13
+	b.TextColor3 = Color3.fromRGB(210,215,225)
+	Instance.new("UICorner",b).CornerRadius = UDim.new(0,10)
 
-	local name = Instance.new("TextLabel")
-	name.Text = data.brainrot or "Unknown"
-	name.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Medium)
-	name.TextSize = 17
-	name.TextColor3 = Color3.fromRGB(235,235,240)
-	name.BackgroundTransparency = 1
-	name.Position = UDim2.fromOffset(22,18)
-	name.Size = UDim2.new(1,-200,0,24)
-	name.TextXAlignment = Enum.TextXAlignment.Left
-	name.Parent = f
-
-	local money = Instance.new("TextLabel")
-	money.Text = data.money or ""
-	money.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
-	money.TextSize = 14
-	money.TextColor3 = Color3.fromRGB(160,170,185)
-	money.BackgroundTransparency = 1
-	money.Position = UDim2.fromOffset(22,46)
-	money.Size = UDim2.new(1,-200,0,20)
-	money.TextXAlignment = Enum.TextXAlignment.Left
-	money.Parent = f
-
-	local join = Instance.new("TextButton")
-	join.Text = "JOIN"
-	join.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.SemiBold)
-	join.TextSize = 15
-	join.TextColor3 = Color3.fromRGB(20,20,24)
-	join.BackgroundColor3 = Color3.fromRGB(85,200,135)
-	join.Size = UDim2.fromOffset(110,42)
-	join.Position = UDim2.new(1,-132,0.5,-21)
-	join.BorderSizePixel = 0
-	join.Parent = f
-	Instance.new("UICorner",join).CornerRadius = UDim.new(0,14)
-
-	join.MouseButton1Click:Connect(function()
-		TeleportService:TeleportToPlaceInstance(data.placeId,data.jobId,player)
+	b.MouseButton1Click:Connect(function()
+		FILTER_MODE = mode
+		for _,c in ipairs(panel:GetChildren()) do
+			if c:IsA("TextButton") then
+				c.BackgroundColor3 = Color3.fromRGB(30,33,40)
+			end
+		end
+		b.BackgroundColor3 = Color3.fromRGB(60,130,200)
 	end)
 
-	f.BackgroundTransparency = 1
-	tween(f,{BackgroundTransparency=0},0.25)
+	return b
 end
 
--- FILTER
-local range = {min=1e6,max=1e7}
+makeOption("Under 1M","UNDER_1M").Parent = panel
+makeOption("Over 1M","OVER_1M").Parent = panel
+makeOption("Over 10M","OVER_10M").Parent = panel
+makeOption("Over 49M","OVER_49M").Parent = panel
+makeOption("Over 100M","OVER_100M").Parent = panel
 
-local function activate(tab)
-	for _,b in ipairs({tab1,tab2,tab3}) do
-		b.BackgroundColor3 = Color3.fromRGB(26,28,34)
-		b.TextColor3 = Color3.fromRGB(180,185,195)
+-- SETTINGS TOGGLE
+settingsBtn.MouseButton1Click:Connect(function()
+	panel.Visible = not panel.Visible
+end)
+
+-- AUTO JOIN LOGIC
+local function parseMPS(v)
+	if typeof(v) == "number" then
+		return v
 	end
-	tab.BackgroundColor3 = Color3.fromRGB(34,38,46)
-	tab.TextColor3 = Color3.fromRGB(240,240,245)
+	return tonumber(v) or 0
 end
 
-tab1.MouseButton1Click:Connect(function()
-	range={min=1e6,max=1e7}
-	activate(tab1)
-end)
-tab2.MouseButton1Click:Connect(function()
-	range={min=1e7,max=1e8}
-	activate(tab2)
-end)
-tab3.MouseButton1Click:Connect(function()
-	range={min=1e8,max=math.huge}
-	activate(tab3)
-end)
-
-activate(tab1)
-
--- DATA
-local function refresh()
-	list:ClearAllChildren()
-	layout.Parent = list
-
+local function findBestServer()
 	local ok,res = pcall(function()
 		return HttpService:GetAsync(RELAY_URL)
 	end)
 	if not ok then return end
 
-	local data = HttpService:JSONDecode(res)
-	for _,v in ipairs(data) do
-		local mps = tonumber(v.mps) or 0
-		if mps>=range.min and mps<range.max then
-			card(v)
+	local servers = HttpService:JSONDecode(res)
+	local filter = FILTERS[FILTER_MODE]
+
+	local best
+	local bestMPS = 0
+
+	for _,s in ipairs(servers) do
+		local mps = parseMPS(s.mps)
+		if mps >= filter.min and mps <= filter.max then
+			if mps > bestMPS then
+				bestMPS = mps
+				best = s
+			end
 		end
 	end
+
+	return best
 end
 
-task.spawn(function()
-	while task.wait(REFRESH_INTERVAL) do
-		refresh()
+-- AJ CLICK
+ajBtn.MouseButton1Click:Connect(function()
+	ajBtn.Text = "SEARCHING..."
+	local server = findBestServer()
+	if server and server.jobId then
+		TeleportService:TeleportToPlaceInstance(
+			server.placeId or PLACE_ID,
+			server.jobId,
+			player
+		)
+	else
+		ajBtn.Text = "NO SERVER"
+		task.delay(1.5,function()
+			ajBtn.Text = "KRYPT AJ"
+		end)
 	end
 end)
 
-refresh()
-
--- DRAG
+-- DRAG BAR
 do
-	local dragging,start,startPos
-	main.InputBegan:Connect(function(i)
-		if i.UserInputType==Enum.UserInputType.MouseButton1 then
-			dragging=true
-			start=i.Position
-			startPos=main.Position
+	local dragging,startPos,startInput
+	bar.InputBegan:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			startInput = i.Position
+			startPos = bar.Position
 		end
 	end)
+
 	UserInputService.InputChanged:Connect(function(i)
-		if dragging and i.UserInputType==Enum.UserInputType.MouseMovement then
-			local d=i.Position-start
-			main.Position=startPos+UDim2.fromOffset(d.X,d.Y)
+		if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+			local delta = i.Position - startInput
+			bar.Position = startPos + UDim2.fromOffset(delta.X,delta.Y)
+			panel.Position = bar.Position + UDim2.fromOffset(0,56)
 		end
 	end)
+
 	UserInputService.InputEnded:Connect(function(i)
-		if i.UserInputType==Enum.UserInputType.MouseButton1 then
-			dragging=false
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = false
 		end
 	end)
 end
