@@ -1,151 +1,49 @@
+-- =====================================
+-- KRYPTH GUI LOGIC (AUTO JOINER)
+-- =====================================
+
 repeat task.wait() until game:IsLoaded()
 
--- ========================
 -- SERVICES
--- ========================
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
-local CoreGui = game:GetService("CoreGui")
-local UIS = game:GetService("UserInputService")
 
 local PLAYER = Players.LocalPlayer
 local RELAY_URL = "https://introducing-annual-sys-oops.trycloudflare.com/servers"
-local FONT = Font.new("rbxasset://fonts/families/TitilliumWeb.json")
 
--- ========================
--- CLEAN OLD GUI
--- ========================
-pcall(function()
-	if CoreGui:FindFirstChild("KrypthAJ") then
-		CoreGui.KrypthAJ:Destroy()
-	end
+-- GUI REFERENCES
+local Gui = PLAYER.PlayerGui:WaitForChild("Krypth ")
+local JoinBtn = Gui:WaitForChild("KRYPTH JOIN BUTTON")
+local SettingsBtn = Gui:WaitForChild("KRYPTH SETTINGS")
+local SettingsFrame = SettingsBtn:WaitForChild("Krypth settings frame")
+local InputBox = SettingsFrame:WaitForChild("Krypth Setting textbox")
+
+-- STATE
+local MIN_MPS = 0
+SettingsFrame.Visible = false
+
+-- ============================
+-- SETTINGS TOGGLE
+-- ============================
+SettingsBtn.MouseButton1Click:Connect(function()
+	SettingsFrame.Visible = not SettingsFrame.Visible
 end)
 
--- ========================
--- GUI
--- ========================
-local Gui = Instance.new("ScreenGui")
-Gui.Name = "KrypthAJ"
-Gui.ResetOnSpawn = false
-Gui.Parent = CoreGui
-
-local Bar = Instance.new("Frame", Gui)
-Bar.Size = UDim2.fromOffset(420, 48)
-Bar.Position = UDim2.fromScale(0.5, 0.06)
-Bar.AnchorPoint = Vector2.new(0.5, 0)
-Bar.BackgroundColor3 = Color3.fromRGB(18,18,24)
-Bar.BorderSizePixel = 0
-Instance.new("UICorner", Bar).CornerRadius = UDim.new(0,14)
-
--- ========================
--- DRAG (FIXED)
--- ========================
-do
-	local dragging = false
-	local startMouse, startPos
-
-	Bar.InputBegan:Connect(function(i)
-		if i.UserInputType == Enum.UserInputType.MouseButton1 then
-			dragging = true
-			startMouse = i.Position
-			startPos = Bar.Position
-		end
-	end)
-
-	UIS.InputChanged:Connect(function(i)
-		if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
-			local delta = i.Position - startMouse
-			Bar.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
-		end
-	end)
-
-	UIS.InputEnded:Connect(function(i)
-		if i.UserInputType == Enum.UserInputType.MouseButton1 then
-			dragging = false
-		end
-	end)
-end
-
--- ========================
--- BUTTON HELPER
--- ========================
-local function button(text, x)
-	local b = Instance.new("TextButton", Bar)
-	b.Size = UDim2.fromOffset(160,32)
-	b.Position = UDim2.fromOffset(x,8)
-	b.Text = text
-	b.FontFace = FONT
-	b.TextSize = 15
-	b.TextColor3 = Color3.fromRGB(235,235,245)
-	b.BackgroundColor3 = Color3.fromRGB(32,32,40)
-	b.BorderSizePixel = 0
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,10)
-	return b
-end
-
-local JoinBtn = button("Krypth AJ", 16)
-local SettingsBtn = button("Settings", 244)
-
--- ========================
--- SETTINGS PANEL (FIXED)
--- ========================
-local Settings = Instance.new("Frame", Gui)
-Settings.Size = UDim2.fromOffset(420,140)
-Settings.AnchorPoint = Vector2.new(0.5,0)
-Settings.Visible = false
-Settings.BackgroundColor3 = Color3.fromRGB(22,22,28)
-Settings.BorderSizePixel = 0
-Instance.new("UICorner", Settings).CornerRadius = UDim.new(0,14)
-
--- follow bar
-local function updateSettingsPos()
-	Settings.Position = Bar.Position + UDim2.new(0,0,0,56)
-end
-updateSettingsPos()
-Bar:GetPropertyChangedSignal("Position"):Connect(updateSettingsPos)
-
--- ========================
--- INPUT
--- ========================
-local Input = Instance.new("TextBox", Settings)
-Input.Size = UDim2.fromOffset(200,36)
-Input.Position = UDim2.fromOffset(20,60)
-Input.PlaceholderText = "Enter minimum MPS (e.g. 49000000)"
-Input.FontFace = FONT
-Input.TextSize = 14
-Input.TextColor3 = Color3.fromRGB(235,235,245)
-Input.BackgroundColor3 = Color3.fromRGB(32,32,40)
-Input.BorderSizePixel = 0
-Instance.new("UICorner", Input).CornerRadius = UDim.new(0,10)
-
-local Display = Instance.new("TextLabel", Settings)
-Display.Size = UDim2.fromOffset(160,36)
-Display.Position = UDim2.fromOffset(240,60)
-Display.FontFace = FONT
-Display.TextSize = 18
-Display.TextColor3 = Color3.fromRGB(120,200,255)
-Display.BackgroundTransparency = 1
-Display.Text = "0 M"
-
-local MIN_MPS = 0
-
-Input:GetPropertyChangedSignal("Text"):Connect(function()
-	local n = tonumber(Input.Text)
+-- ============================
+-- INPUT HANDLING
+-- ============================
+InputBox:GetPropertyChangedSignal("Text"):Connect(function()
+	local n = tonumber(InputBox.Text:gsub("%D", ""))
 	if n then
 		MIN_MPS = n
-		Display.Text = string.format("%d M", math.floor(n / 1_000_000))
 	end
 end)
 
-SettingsBtn.MouseButton1Click:Connect(function()
-	Settings.Visible = not Settings.Visible
-end)
-
--- ========================
--- SERVER PICKER (SAFE)
--- ========================
-local function getBest()
+-- ============================
+-- GET BEST SERVER
+-- ============================
+local function getBestServer()
 	local ok, raw = pcall(function()
 		return HttpService:GetAsync(RELAY_URL)
 	end)
@@ -158,19 +56,11 @@ local function getBest()
 	if not ok or type(data) ~= "table" then return end
 
 	local best
-	for _,s in ipairs(data) do
-		local mps =
-			tonumber(s.mps)
-			or tonumber((s.money or ""):gsub("%D",""))
-			or 0
-
+	for _, s in ipairs(data) do
+		local mps = tonumber(s.mps) or 0
 		if mps >= MIN_MPS then
 			if not best or mps > best.mps then
-				best = {
-					placeId = s.placeId,
-					jobId = s.jobId,
-					mps = mps
-				}
+				best = s
 			end
 		end
 	end
@@ -178,9 +68,12 @@ local function getBest()
 	return best
 end
 
+-- ============================
+-- JOIN BUTTON
+-- ============================
 JoinBtn.MouseButton1Click:Connect(function()
-	local best = getBest()
-	if best then
+	local best = getBestServer()
+	if best and best.placeId and best.jobId then
 		TeleportService:TeleportToPlaceInstance(
 			best.placeId,
 			best.jobId,
