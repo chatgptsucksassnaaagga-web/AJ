@@ -18,7 +18,7 @@ local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
 
 -- CONFIG
-local RELAY_URL = "  https://subcommittee-resort-victor-retail.trycloudflare.com/servers"
+local RELAY_URL = "https://subcommittee-resort-victor-retail.trycloudflare.com/servers"
 local PLACE_ID = game.PlaceId
 
 -- SETTINGS STATE
