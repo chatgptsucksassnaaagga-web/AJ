@@ -7,11 +7,83 @@
  Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER 
 ]=]
 
--- FULL KRYPTH AUTO JOINER (CLEAN + FIXED)
+-- ================================
+-- GUI (UNTOUCHED)
+-- ================================
+
+local G2L = {}
+
+-- ScreenGui
+G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
+G2L["1"].Name = "Krypth "
+G2L["1"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Join Button
+G2L["2"] = Instance.new("TextButton", G2L["1"])
+G2L["2"].Name = "KRYPTH JOIN BUTTON"
+G2L["2"].Text = "Join Servers"
+G2L["2"].Size = UDim2.new(0,103,0,24)
+G2L["2"].Position = UDim2.new(0.39791,0,0.01663,0)
+G2L["2"].BackgroundColor3 = Color3.fromRGB(123,31,114)
+G2L["2"].BackgroundTransparency = 0.2
+G2L["2"].FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Bold)
+G2L["2"].TextSize = 22
+G2L["2"].BorderSizePixel = 0
+
+Instance.new("UICorner", G2L["2"]).CornerRadius = UDim.new(0,3)
+local js = Instance.new("UIStroke", G2L["2"])
+js.Thickness = 1.5
+
+-- Settings Button
+G2L["5"] = Instance.new("TextButton", G2L["1"])
+G2L["5"].Name = "KRYPTH SETTINGS"
+G2L["5"].Text = "Settings"
+G2L["5"].Size = UDim2.new(0,103,0,24)
+G2L["5"].Position = UDim2.new(0.52057,0,0.01663,0)
+G2L["5"].BackgroundColor3 = Color3.fromRGB(123,31,114)
+G2L["5"].BackgroundTransparency = 0.2
+G2L["5"].FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Bold)
+G2L["5"].TextSize = 22
+G2L["5"].BorderSizePixel = 0
+
+Instance.new("UICorner", G2L["5"]).CornerRadius = UDim.new(0,3)
+local ss = Instance.new("UIStroke", G2L["5"])
+ss.Thickness = 1.5
+
+-- Settings Frame
+G2L["8"] = Instance.new("Frame", G2L["5"])
+G2L["8"].Name = "Krypth settings frame"
+G2L["8"].Size = UDim2.new(0,311,0,78)
+G2L["8"].Position = UDim2.new(-1.78641,0,8.04167,0)
+G2L["8"].BackgroundColor3 = Color3.fromRGB(123,31,114)
+G2L["8"].BackgroundTransparency = 0.2
+G2L["8"].BorderSizePixel = 0
+
+Instance.new("UICorner", G2L["8"]).CornerRadius = UDim.new(0,3)
+local fs = Instance.new("UIStroke", G2L["8"])
+fs.Thickness = 1.5
+
+-- TextBox
+G2L["b"] = Instance.new("TextBox", G2L["8"])
+G2L["b"].Size = UDim2.new(0,132,0,43)
+G2L["b"].Position = UDim2.new(0.52709,0,0.20513,0)
+G2L["b"].BackgroundColor3 = Color3.fromRGB(72,19,68)
+G2L["b"].BackgroundTransparency = 0.5
+G2L["b"].FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Bold)
+G2L["b"].TextSize = 19
+G2L["b"].Text = ""
+G2L["b"].BorderSizePixel = 0
+
+Instance.new("UICorner", G2L["b"]).CornerRadius = UDim.new(0,3)
+local ts = Instance.new("UIStroke", G2L["b"])
+ts.Thickness = 1.5
+
+-- ================================
+-- AUTO JOINER LOGIC (ADDED)
+-- ================================
 
 repeat task.wait() until game:IsLoaded()
 
--- SERVICES
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
@@ -19,61 +91,13 @@ local HttpService = game:GetService("HttpService")
 local PLAYER = Players.LocalPlayer
 local RELAY_URL = "https://introducing-annual-sys-oops.trycloudflare.com/servers"
 
--- ================= GUI =================
-local Gui = Instance.new("ScreenGui", PLAYER:WaitForChild("PlayerGui"))
-Gui.Name = "Krypth"
-Gui.ResetOnSpawn = false
+local JoinBtn = G2L["2"]
+local SettingsBtn = G2L["5"]
+local SettingsFrame = G2L["8"]
+local InputBox = G2L["b"]
 
-local JoinBtn = Instance.new("TextButton", Gui)
-JoinBtn.Size = UDim2.fromOffset(110, 26)
-JoinBtn.Position = UDim2.fromScale(0.45, 0.03)
-JoinBtn.Text = "Join Servers"
-JoinBtn.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Bold)
-JoinBtn.TextSize = 18
-JoinBtn.BackgroundColor3 = Color3.fromRGB(123,31,114)
-JoinBtn.BackgroundTransparency = 0.15
-JoinBtn.BorderSizePixel = 0
-Instance.new("UICorner", JoinBtn).CornerRadius = UDim.new(0,4)
-
-local SettingsBtn = JoinBtn:Clone()
-SettingsBtn.Parent = Gui
-SettingsBtn.Text = "Settings"
-SettingsBtn.Position = UDim2.fromScale(0.53, 0.03)
-
-local SettingsFrame = Instance.new("Frame", Gui)
-SettingsFrame.Size = UDim2.fromOffset(320, 85)
-SettingsFrame.Position = UDim2.fromScale(0.5, 0.1)
-SettingsFrame.AnchorPoint = Vector2.new(0.5,0)
-SettingsFrame.BackgroundColor3 = Color3.fromRGB(123,31,114)
-SettingsFrame.BackgroundTransparency = 0.15
-SettingsFrame.BorderSizePixel = 0
-SettingsFrame.Visible = false
-Instance.new("UICorner", SettingsFrame).CornerRadius = UDim.new(0,4)
-
-local Help = Instance.new("TextLabel", SettingsFrame)
-Help.Size = UDim2.fromOffset(300,18)
-Help.Position = UDim2.fromOffset(10,8)
-Help.BackgroundTransparency = 1
-Help.Text = "Choose minimum MPS to join"
-Help.FontFace = JoinBtn.FontFace
-Help.TextSize = 16
-Help.TextColor3 = Color3.new(1,1,1)
-
-local InputBox = Instance.new("TextBox", SettingsFrame)
-InputBox.Size = UDim2.fromOffset(150,36)
-InputBox.Position = UDim2.fromOffset(85,38)
-InputBox.PlaceholderText = "e.g. 10m / 100m"
-InputBox.FontFace = JoinBtn.FontFace
-InputBox.TextSize = 18
-InputBox.BackgroundColor3 = Color3.fromRGB(72,19,68)
-InputBox.BackgroundTransparency = 0.2
-InputBox.BorderSizePixel = 0
-InputBox.TextColor3 = Color3.new(1,1,1)
-Instance.new("UICorner", InputBox).CornerRadius = UDim.new(0,4)
-
--- ================= LOGIC =================
 local MIN_MPS = 0
-local joining = false
+SettingsFrame.Visible = false
 
 SettingsBtn.MouseButton1Click:Connect(function()
 	SettingsFrame.Visible = not SettingsFrame.Visible
@@ -81,12 +105,7 @@ end)
 
 InputBox:GetPropertyChangedSignal("Text"):Connect(function()
 	local n = tonumber(InputBox.Text:gsub("%D",""))
-	if n then
-		MIN_MPS = n
-		InputBox.TextColor3 = Color3.new(1,1,1)
-	else
-		InputBox.TextColor3 = Color3.fromRGB(255,80,80)
-	end
+	if n then MIN_MPS = n end
 end)
 
 local function getBestServer()
@@ -99,9 +118,8 @@ local function getBestServer()
 	local best
 
 	for _,s in ipairs(data) do
-		local mps = tonumber(s.mps) or 0
-		if mps >= MIN_MPS then
-			if not best or mps > best.mps then
+		if tonumber(s.mps) >= MIN_MPS then
+			if not best or s.mps > best.mps then
 				best = s
 			end
 		end
@@ -110,15 +128,8 @@ local function getBestServer()
 end
 
 JoinBtn.MouseButton1Click:Connect(function()
-	if joining then return end
-	joining = true
-
 	local best = getBestServer()
-	if best and best.placeId and best.jobId then
+	if best then
 		TeleportService:TeleportToPlaceInstance(best.placeId, best.jobId, PLAYER)
 	end
-
-	task.delay(2, function()
-		joining = false
-	end)
 end)
