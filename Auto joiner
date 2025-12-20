@@ -1,37 +1,85 @@
--- GUI ONLY – GAMER RED
+-- PREMIUM DESKTOP UI
 
 local Players = game:GetService("Players")
-local Player = Players.LocalPlayer
+local player = Players.LocalPlayer
 
-local gui = Instance.new("ScreenGui", Player.PlayerGui)
-gui.Name = "ExampleRed"
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+gui.Name = "PremiumUI"
+
+local scale = Instance.new("UIScale", gui)
+scale.Scale = 1
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0,430,0,450)
-main.Position = UDim2.new(0.5,-215,0.5,-225)
-main.BackgroundColor3 = Color3.fromRGB(20,20,20)
-Instance.new("UICorner", main)
+main.Size = UDim2.new(0,520,0,480)
+main.Position = UDim2.new(0.5,-260,0.5,-240)
+main.BackgroundColor3 = Color3.fromRGB(17,18,20)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,14)
 
 local stroke = Instance.new("UIStroke", main)
-stroke.Color = Color3.fromRGB(220,40,30)
-stroke.Thickness = 3
+stroke.Color = Color3.fromRGB(45,45,50)
+stroke.Thickness = 1
 
-local title = Instance.new("TextLabel", main)
-title.Text = "Krypth Auto Joiner"
-title.Font = Enum.Font.GothamBlack
+-- Header
+local header = Instance.new("Frame", main)
+header.Size = UDim2.new(1,0,0,56)
+header.BackgroundTransparency = 1
+
+local title = Instance.new("TextLabel", header)
+title.Text = "Krypth"
+title.Font = Enum.Font.GothamBold
 title.TextSize = 26
-title.TextColor3 = Color3.fromRGB(255,80,80)
-title.Size = UDim2.new(1,0,0,50)
+title.TextColor3 = Color3.fromRGB(235,235,235)
 title.BackgroundTransparency = 1
+title.Position = UDim2.new(0,20,0,14)
+title.TextXAlignment = Left
+
+local subtitle = Instance.new("TextLabel", header)
+subtitle.Text = "Auto Joiner"
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextSize = 14
+subtitle.TextColor3 = Color3.fromRGB(150,150,150)
+subtitle.BackgroundTransparency = 1
+subtitle.Position = UDim2.new(0,20,0,38)
+subtitle.TextXAlignment = Left
+
+-- Content
+local content = Instance.new("Frame", main)
+content.Position = UDim2.new(0,20,0,70)
+content.Size = UDim2.new(1,-40,1,-90)
+content.BackgroundTransparency = 1
+
+local list = Instance.new("UIListLayout", content)
+list.Padding = UDim.new(0,14)
 
 for i = 1,5 do
-    local btn = Instance.new("TextButton", main)
-    btn.Size = UDim2.new(1,-20,0,50)
-    btn.Position = UDim2.new(0,10,0,50 + i*55)
-    btn.Text = "JOIN SERVER "..i
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 18
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.BackgroundColor3 = Color3.fromRGB(170,30,25)
-    Instance.new("UICorner", btn)
+    local row = Instance.new("Frame", content)
+    row.Size = UDim2.new(1,0,0,64)
+    row.BackgroundColor3 = Color3.fromRGB(24,25,28)
+    Instance.new("UICorner", row).CornerRadius = UDim.new(0,10)
+
+    local name = Instance.new("TextLabel", row)
+    name.Text = "High MPS Server"
+    name.Font = Enum.Font.GothamMedium
+    name.TextSize = 16
+    name.TextColor3 = Color3.fromRGB(230,230,230)
+    name.BackgroundTransparency = 1
+    name.Position = UDim2.new(0,16,0,12)
+
+    local mps = Instance.new("TextLabel", row)
+    mps.Text = "$12.4M / s"
+    mps.Font = Enum.Font.Gotham
+    mps.TextSize = 14
+    mps.TextColor3 = Color3.fromRGB(160,160,160)
+    mps.BackgroundTransparency = 1
+    mps.Position = UDim2.new(0,16,0,34)
+
+    local join = Instance.new("TextButton", row)
+    join.Text = "Join"
+    join.Font = Enum.Font.GothamSemibold
+    join.TextSize = 15
+    join.TextColor3 = Color3.fromRGB(20,20,20)
+    join.BackgroundColor3 = Color3.fromRGB(235,235,235)
+    join.Size = UDim2.new(0,84,0,34)
+    join.Position = UDim2.new(1,-100,0.5,-17)
+    Instance.new("UICorner", join).CornerRadius = UDim.new(0,8)
 end
