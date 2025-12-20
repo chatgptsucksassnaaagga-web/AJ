@@ -1,46 +1,37 @@
--- GUI ONLY – MODERN CLEAN
+-- GUI ONLY – GAMER RED
 
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 
 local gui = Instance.new("ScreenGui", Player.PlayerGui)
-gui.Name = "ExampleClean"
+gui.Name = "ExampleRed"
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0,420,0,460)
-main.Position = UDim2.new(0.5,-210,0.5,-230)
-main.BackgroundColor3 = Color3.fromRGB(24,24,24)
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,12)
+main.Size = UDim2.new(0,430,0,450)
+main.Position = UDim2.new(0.5,-215,0.5,-225)
+main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Instance.new("UICorner", main)
+
+local stroke = Instance.new("UIStroke", main)
+stroke.Color = Color3.fromRGB(220,40,30)
+stroke.Thickness = 3
 
 local title = Instance.new("TextLabel", main)
+title.Text = "Krypth Auto Joiner"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 26
+title.TextColor3 = Color3.fromRGB(255,80,80)
 title.Size = UDim2.new(1,0,0,50)
-title.Text = "Krypth Joiner"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 28
-title.TextColor3 = Color3.new(1,1,1)
 title.BackgroundTransparency = 1
 
-local list = Instance.new("ScrollingFrame", main)
-list.Position = UDim2.new(0,10,0,60)
-list.Size = UDim2.new(1,-20,1,-70)
-list.CanvasSize = UDim2.new()
-list.ScrollBarImageTransparency = 1
-
-local layout = Instance.new("UIListLayout", list)
-layout.Padding = UDim.new(0,10)
-
-for i = 1,6 do
-    local card = Instance.new("Frame", list)
-    card.Size = UDim2.new(1,0,0,60)
-    card.BackgroundColor3 = Color3.fromRGB(35,35,35)
-    Instance.new("UICorner", card).CornerRadius = UDim.new(0,10)
-
-    local txt = Instance.new("TextLabel", card)
-    txt.Text = "Server Example "..i
-    txt.Font = Enum.Font.GothamMedium
-    txt.TextSize = 16
-    txt.TextColor3 = Color3.new(1,1,1)
-    txt.BackgroundTransparency = 1
-    txt.Position = UDim2.new(0,10,0,10)
-    txt.Size = UDim2.new(1,-20,0,20)
+for i = 1,5 do
+    local btn = Instance.new("TextButton", main)
+    btn.Size = UDim2.new(1,-20,0,50)
+    btn.Position = UDim2.new(0,10,0,50 + i*55)
+    btn.Text = "JOIN SERVER "..i
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 18
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.BackgroundColor3 = Color3.fromRGB(170,30,25)
+    Instance.new("UICorner", btn)
 end
