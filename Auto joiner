@@ -1,135 +1,46 @@
---[=[
- d888b  db    db d888888b      .d888b.      db      db    db  .d8b.  
-88' Y8b 88    88   `88'        VP  `8D      88      88    88 d8' `8b 
-88      88    88    88            odD'      88      88    88 88ooo88 
-88  ooo 88    88    88          .88'        88      88    88 88~~~88 
-88. ~8~ 88b  d88   .88.        j88.         88booo. 88b  d88 88   88    @uniquadev
- Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER 
-]=]
-
--- ================================
--- GUI (UNTOUCHED)
--- ================================
-
-local G2L = {}
-
--- ScreenGui
-G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
-G2L["1"].Name = "Krypth "
-G2L["1"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
--- Join Button
-G2L["2"] = Instance.new("TextButton", G2L["1"])
-G2L["2"].Name = "KRYPTH JOIN BUTTON"
-G2L["2"].Text = "Join Servers"
-G2L["2"].Size = UDim2.new(0,103,0,24)
-G2L["2"].Position = UDim2.new(0.39791,0,0.01663,0)
-G2L["2"].BackgroundColor3 = Color3.fromRGB(123,31,114)
-G2L["2"].BackgroundTransparency = 0.2
-G2L["2"].FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Bold)
-G2L["2"].TextSize = 22
-G2L["2"].BorderSizePixel = 0
-
-Instance.new("UICorner", G2L["2"]).CornerRadius = UDim.new(0,3)
-local js = Instance.new("UIStroke", G2L["2"])
-js.Thickness = 1.5
-
--- Settings Button
-G2L["5"] = Instance.new("TextButton", G2L["1"])
-G2L["5"].Name = "KRYPTH SETTINGS"
-G2L["5"].Text = "Settings"
-G2L["5"].Size = UDim2.new(0,103,0,24)
-G2L["5"].Position = UDim2.new(0.52057,0,0.01663,0)
-G2L["5"].BackgroundColor3 = Color3.fromRGB(123,31,114)
-G2L["5"].BackgroundTransparency = 0.2
-G2L["5"].FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Bold)
-G2L["5"].TextSize = 22
-G2L["5"].BorderSizePixel = 0
-
-Instance.new("UICorner", G2L["5"]).CornerRadius = UDim.new(0,3)
-local ss = Instance.new("UIStroke", G2L["5"])
-ss.Thickness = 1.5
-
--- Settings Frame
-G2L["8"] = Instance.new("Frame", G2L["5"])
-G2L["8"].Name = "Krypth settings frame"
-G2L["8"].Size = UDim2.new(0,311,0,78)
-G2L["8"].Position = UDim2.new(-1.78641,0,8.04167,0)
-G2L["8"].BackgroundColor3 = Color3.fromRGB(123,31,114)
-G2L["8"].BackgroundTransparency = 0.2
-G2L["8"].BorderSizePixel = 0
-
-Instance.new("UICorner", G2L["8"]).CornerRadius = UDim.new(0,3)
-local fs = Instance.new("UIStroke", G2L["8"])
-fs.Thickness = 1.5
-
--- TextBox
-G2L["b"] = Instance.new("TextBox", G2L["8"])
-G2L["b"].Size = UDim2.new(0,132,0,43)
-G2L["b"].Position = UDim2.new(0.52709,0,0.20513,0)
-G2L["b"].BackgroundColor3 = Color3.fromRGB(72,19,68)
-G2L["b"].BackgroundTransparency = 0.5
-G2L["b"].FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json",Enum.FontWeight.Bold)
-G2L["b"].TextSize = 19
-G2L["b"].Text = ""
-G2L["b"].BorderSizePixel = 0
-
-Instance.new("UICorner", G2L["b"]).CornerRadius = UDim.new(0,3)
-local ts = Instance.new("UIStroke", G2L["b"])
-ts.Thickness = 1.5
-
--- ================================
--- AUTO JOINER LOGIC (ADDED)
--- ================================
-
-repeat task.wait() until game:IsLoaded()
+-- GUI ONLY – MODERN CLEAN
 
 local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
+local Player = Players.LocalPlayer
 
-local PLAYER = Players.LocalPlayer
-local RELAY_URL = "https://introducing-annual-sys-oops.trycloudflare.com/servers"
+local gui = Instance.new("ScreenGui", Player.PlayerGui)
+gui.Name = "ExampleClean"
 
-local JoinBtn = G2L["2"]
-local SettingsBtn = G2L["5"]
-local SettingsFrame = G2L["8"]
-local InputBox = G2L["b"]
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0,420,0,460)
+main.Position = UDim2.new(0.5,-210,0.5,-230)
+main.BackgroundColor3 = Color3.fromRGB(24,24,24)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,12)
 
-local MIN_MPS = 0
-SettingsFrame.Visible = false
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1,0,0,50)
+title.Text = "Krypth Joiner"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 28
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundTransparency = 1
 
-SettingsBtn.MouseButton1Click:Connect(function()
-	SettingsFrame.Visible = not SettingsFrame.Visible
-end)
+local list = Instance.new("ScrollingFrame", main)
+list.Position = UDim2.new(0,10,0,60)
+list.Size = UDim2.new(1,-20,1,-70)
+list.CanvasSize = UDim2.new()
+list.ScrollBarImageTransparency = 1
 
-InputBox:GetPropertyChangedSignal("Text"):Connect(function()
-	local n = tonumber(InputBox.Text:gsub("%D",""))
-	if n then MIN_MPS = n end
-end)
+local layout = Instance.new("UIListLayout", list)
+layout.Padding = UDim.new(0,10)
 
-local function getBestServer()
-	local ok, raw = pcall(function()
-		return HttpService:GetAsync(RELAY_URL)
-	end)
-	if not ok then return end
+for i = 1,6 do
+    local card = Instance.new("Frame", list)
+    card.Size = UDim2.new(1,0,0,60)
+    card.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0,10)
 
-	local data = HttpService:JSONDecode(raw)
-	local best
-
-	for _,s in ipairs(data) do
-		if tonumber(s.mps) >= MIN_MPS then
-			if not best or s.mps > best.mps then
-				best = s
-			end
-		end
-	end
-	return best
+    local txt = Instance.new("TextLabel", card)
+    txt.Text = "Server Example "..i
+    txt.Font = Enum.Font.GothamMedium
+    txt.TextSize = 16
+    txt.TextColor3 = Color3.new(1,1,1)
+    txt.BackgroundTransparency = 1
+    txt.Position = UDim2.new(0,10,0,10)
+    txt.Size = UDim2.new(1,-20,0,20)
 end
-
-JoinBtn.MouseButton1Click:Connect(function()
-	local best = getBestServer()
-	if best then
-		TeleportService:TeleportToPlaceInstance(best.placeId, best.jobId, PLAYER)
-	end
-end)
